@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Species Bar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/speciesToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:title="Whitetail Deer"
+        app:titleCentered="true"
+        android:fitsSystemWindows="true"
+        app:menu="@menu/species_menu" />
+
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- ROW: Name -->
+            <EditText
+                android:id="@+id/animal_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FDAA48"
+                android:textColor="#000000"
+                android:textAlignment="center"
+                android:padding="16dp"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:textColorHint="@color/black"
+                android:layout_marginBottom="8dp"
+                android:text="New Whitetail Deer"
+                android:singleLine="true" />
+
+
+            <!-- ROW: Typical/Nontypical switch -->
+            <LinearLayout
+                android:id="@+id/typeSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:text="Type"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:text="Whether the animal is scored as Typical or Nontypical (must have at least one abnormal point to qualify for Nontypical scoring)"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <!-- Dividing Line -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:id="@+id/labelNontypical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nontypical"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:paddingEnd="8dp" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/typicalSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true" />
+
+                    <TextView
+                        android:id="@+id/labelTypical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Typical"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:paddingStart="8dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+            <!-- ROW: Points -->
+            <include layout="@layout/section_points"/>
+
+
+            <!-- ROW: Spreads -->
+            <include layout="@layout/section_spreads"/>
+
+
+            <!-- ROW: Abnormal Points -->
+            <include
+                android:id="@+id/abnormalPointsSection"
+                layout="@layout/section_point_lengths" />
+
+
+
+            <!-- ROW: Lengths -->
+            <include
+                android:id="@+id/lengthsSection"
+                layout="@layout/section_point_lengths" />
+
+
+
+            <!-- CIRCUMFERENCE STUFF HERE -->
+            <include layout="@layout/section_circumferences"/>
+
+
+            <!-- SCORE DISPLAY -->
+            <TextView
+                android:text="Scoring Totals"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:text="Totals calculated from measurements"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:text="Notes:"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:text="Gross score is calculated from the sums of all main points, the main beams, and the inner spread."
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:text="Abnormal points are only penalized in Typical scoring."
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/spreadCreditNote"
+                android:text="Spread Credit (the length of the longer main beam) is used when the inner spread is greater than both main beams."
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+            <!-- Dividing Line -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="4dp"
+                android:background="@android:color/darker_gray" />
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="8dp">
+
+                <!-- Header Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:text="Category"
+                        android:textStyle="bold"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:paddingStart="32dp"
+                        android:layout_marginBottom="4dp"
+                        android:textSize="22sp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:text="Score"
+                        android:textStyle="bold"
+                        android:gravity="end"
+                        android:paddingEnd="32dp"
+                        android:layout_marginBottom="4dp"
+                        android:textSize="22sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"
+                    android:layout_marginVertical="2dp"/>
+
+                <!-- Row: Spread Credit -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp">
+
+                    <TextView
+                        android:text="Spread Credit"
+                        android:id="@+id/spreadCreditLabel"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:paddingStart="32dp"
+                        android:textSize="20dp"
+                        android:visibility="gone"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:text="Spread"
+                        android:id="@+id/spreadLabel"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:paddingStart="32dp"
+                        android:textSize="20dp"
+                        android:visibility="visible"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/spreadCreditText"
+                        android:text="0"
+                        android:textSize="20dp"
+                        android:gravity="end"
+                        android:paddingEnd="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Row Left Total -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:text="Left Total"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:paddingStart="32dp"
+                        android:textSize="20dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/leftSumText"
+                        android:text="0"
+                        android:textSize="20dp"
+                        android:gravity="end"
+                        android:paddingEnd="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Row: Right Total -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:text="Right Total"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:paddingStart="32dp"
+                        android:textSize="20dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/rightSumText"
+                        android:text="0"
+                        android:textSize="20dp"
+                        android:gravity="end"
+                        android:paddingEnd="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Row: Subtotal -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="2dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:text="Subtotal"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:paddingStart="32dp"
+                        android:textStyle="bold"
+                        android:textSize="20dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/subtotalText"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:textSize="20dp"
+                        android:gravity="end"
+                        android:paddingEnd="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Row: Difference -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:text="Total Difference"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:paddingStart="32dp"
+                        android:textSize="20dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/differenceText"
+                        android:text="0"
+                        android:textSize="20dp"
+                        android:gravity="end"
+                        android:paddingEnd="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Row: Abnormal -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:text="Abnormal"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:paddingStart="32dp"
+                        android:textSize="20dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/abnormalText"
+                        android:text="0"
+                        android:textSize="20dp"
+                        android:gravity="end"
+                        android:paddingEnd="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Row: Gross -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:text="Gross"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:paddingStart="32dp"
+                        android:textSize="20dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/grossScoreText"
+                        android:text="0"
+                        android:textSize="20dp"
+                        android:gravity="end"
+                        android:paddingEnd="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Row: Final -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="10dp">
+
+                    <TextView
+                        android:text="Net Score"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:paddingStart="32dp"
+                        android:textSize="20dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/finalScoreText"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:textSize="20dp"
+                        android:gravity="end"
+                        android:paddingEnd="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <!-- Image Loading -->
+            <FrameLayout
+                android:id="@+id/photoContainer"
+                android:layout_width="220dp"
+                android:layout_height="280dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rounded_image_placeholder"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/buckImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:clipToOutline="true"/>
+
+                <TextView
+                    android:id="@+id/addPhotoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tap to add buck photo"
+                    android:textSize="16sp"
+                    android:textColor="#777777"
+                    android:layout_gravity="center"/>
+            </FrameLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/saveBtn"
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
+                    android:text="Save"
+                    android:textColor="@color/black"
+                    android:backgroundTint="#FDAA48"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <Button
+                    android:id="@+id/downloadBtn"
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
+                    android:text="Download"
+                    android:textColor="@color/black"
+                    android:backgroundTint="#FDAA48"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

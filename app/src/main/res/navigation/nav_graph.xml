@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/scoreFragment">
+
+    <fragment
+        android:id="@+id/scoreFragment"
+        android:name="com.example.buck_score.ScoreFragment"
+        android:label="Score" />
+
+    <fragment
+        android:id="@+id/savedFragment"
+        android:name="com.example.buck_score.ScoreFragment"
+        android:label="Saved" />
+
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="com.example.buck_score.ScoreFragment"
+        android:label="Stats" />
+
+</navigation>
