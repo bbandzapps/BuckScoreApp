@@ -8,20 +8,19 @@ import com.example.buck_score.ScoreFragment.ScoreBreakdown
 import com.google.android.material.color.utilities.Score
 import kotlin.math.max
 
-class DeerProfile : ScoringProfile {
+class CaribouProfile : ScoringProfile {
 
     override fun getVisibleSections() = listOf(
-        ScoreFragment.Section.TYPE,
         ScoreFragment.Section.POINT_COUNT,
         ScoreFragment.Section.LENGTHS,
         ScoreFragment.Section.SPREADS,
-        ScoreFragment.Section.CIRCUMFERENCES,
-        ScoreFragment.Section.ABNORMALS
+        ScoreFragment.Section.WIDTHS,
+        ScoreFragment.Section.CIRCUMFERENCES
     )
 
     override fun getScoreDisplayConfig() = ScoreFragment.ScoreDisplayConfig(
         showSpread = true,
-        showAbnormals = true
+        showAbnormals = false
     )
 
     override fun getSectionConfigs(): List<ScoreFragment.SectionConfig> {
@@ -29,12 +28,17 @@ class DeerProfile : ScoringProfile {
             ScoreFragment.SectionConfig(
                 type = ScoreFragment.Section.POINT_COUNT,
                 title = "Points",
-                note = "Number of points that are at least 1 inch long",
+                note = "Number of points on the antlers and the brow tines",
                 subNote = null,
                 rows = listOf(
                     RowConfig(
-                        label = "",
+                        label = "Number of points on main antlers",
                         type = ScoreFragment.MeasurementType.PointCount,
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
+                    ),
+                    RowConfig(
+                        label = "Number of points on brows",
+                        type = ScoreFragment.MeasurementType.BrowPointCount,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
                     )
                 ),
@@ -65,29 +69,28 @@ class DeerProfile : ScoringProfile {
                 maxDynamicRows = 0
             ),
             ScoreFragment.SectionConfig(
-                type = ScoreFragment.Section.ABNORMALS,
-                title = "Abnormal Points",
-                note = "Length of abnormal points (droptines, points off of a burr, points off of other points, etc.)",
+                type = ScoreFragment.Section.WIDTHS,
+                title = "Widths",
+                note = "Widths of the antlers and the brow palms",
                 subNote = null,
                 rows = listOf(
                     RowConfig(
-                        label = "Abnormal Point 1",
-                        type = ScoreFragment.MeasurementType.AbnormalPoint(1),
+                        label = "Brow palm",
+                        type = ScoreFragment.MeasurementType.BrowWidth,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Abnormal Point 2",
-                        type = ScoreFragment.MeasurementType.AbnormalPoint(2),
+                        label = "Top Palm",
+                        type = ScoreFragment.MeasurementType.Width,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
-                maxDynamicRows = 50,
-                dynamicBaseType = MeasurementType.AbnormalPoint(1)
+                maxDynamicRows = 0
             ),
             ScoreFragment.SectionConfig(
                 type = ScoreFragment.Section.LENGTHS,
                 title = "Lengths",
-                note = "Length of regular points and main beams",
+                note = "Length of regular points and brows",
                 subNote = null,
                 rows = listOf(
                     RowConfig(
@@ -96,52 +99,56 @@ class DeerProfile : ScoringProfile {
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "G1: First Point",
+                        label = "First Point (Brow Palm)",
                         type = ScoreFragment.MeasurementType.G(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "G2: Second Point",
+                        label = "Second Point (Bez)",
                         type = ScoreFragment.MeasurementType.G(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "G3: Third Point",
+                        label = "Rear Point",
                         type = ScoreFragment.MeasurementType.G(3),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "G4: Fourth Point",
+                        label = "Second Longest Top Point",
                         type = ScoreFragment.MeasurementType.G(4),
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                    ),
+                    RowConfig(
+                        label = "Longest Top Point",
+                        type = ScoreFragment.MeasurementType.G(5),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
-                maxDynamicRows = 15,
-                dynamicBaseType = MeasurementType.G(1)
+                maxDynamicRows = 0
             ),
             ScoreFragment.SectionConfig(
                 type = ScoreFragment.Section.CIRCUMFERENCES,
                 title = "Circumferences",
-                note = "Smallest circumferences of main beam between points",
-                subNote = "Note: If a buck does not have enough points to record all circumference measurements, the circumference between the main beam and the last point should be done halfway between the tip of the beam and the base of the last point.",
+                note = "Smallest circumferences of main beam between major points",
+                subNote = null,
                 rows = listOf(
                     RowConfig(
-                        label = "Smallest circumference between G1 and the burr",
+                        label = "Smallest circumference between Brow and Bez points",
                         type = ScoreFragment.MeasurementType.Circumference(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Smallest circumference between G1 and G2",
+                        label = "Smallest circumference between Bez and Rear points",
                         type = ScoreFragment.MeasurementType.Circumference(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Smallest circumference between G2 and G3",
+                        label = "Smallest circumference between Rear point and first top point",
                         type = ScoreFragment.MeasurementType.Circumference(3),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Smallest circumference between G3 and G4",
+                        label = "Smallest circumference between two longest top palm points",
                         type = ScoreFragment.MeasurementType.Circumference(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
@@ -171,12 +178,16 @@ class DeerProfile : ScoringProfile {
             .map { store.getPaired(it) }
 
         val mainBeams = store.getPaired(MeasurementType.MainBeam)
+        val widths = store.getPaired(MeasurementType.Width)
+        val browWidths = store.getPaired(MeasurementType.BrowWidth)
+        val pointCount = store.getPaired(MeasurementType.PointCount)
+        val browPoints = store.getPaired(MeasurementType.BrowPointCount)
 
         val total_difference =
-            getTotalDifference(gPoints) + getTotalDifference(circumferences) + mainBeams.difference()
+            getTotalDifference(gPoints) + getTotalDifference(circumferences) +
+                    mainBeams.difference() + widths.difference() +
+                    pointCount.difference() - store.getPaired(MeasurementType.G(1)).difference()
 
-        val abnormalPoints = store.getAll().filter { it.type is MeasurementType.AbnormalPoint }
-        val abnormalSum = abnormalPoints.sumOf { it.value }
 
         val innerSpread = store.getAll()
             .filter { it.type is MeasurementType.InnerSpread }
@@ -190,30 +201,29 @@ class DeerProfile : ScoringProfile {
         }
 
 
-
-        val leftSum = leftSum(gPoints) + leftSum(circumferences) + mainBeams.left
-        val rightSum = rightSum(gPoints) + rightSum(circumferences) + mainBeams.right
+        val leftSum = leftSum(gPoints) + leftSum(circumferences) +
+                mainBeams.left + widths.left + browWidths.left +
+                browPoints.left + pointCount.left
+        val rightSum = rightSum(gPoints) + rightSum(circumferences) +
+                mainBeams.right + widths.right + browWidths.right +
+                browPoints.right + pointCount.right
 
         val subtotal = leftSum + rightSum + spreadCredit
-        var finalScore = 0.0
-        if (buckType == BuckType.TYPICAL)
-            finalScore = max(0.0, (subtotal - total_difference - abnormalSum))
-        else
-            finalScore = subtotal - total_difference + abnormalSum
+        var finalScore = subtotal - total_difference
 
-        gross = innerSpread + leftSum + rightSum + abnormalSum
+        gross = innerSpread + leftSum + rightSum
 
 
-    return ScoreBreakdown(
-        leftSum = leftSum,
-        rightSum = rightSum,
-        differenceTotal = total_difference,
-        abnormalSum = abnormalSum,
-        spreadCredit = spreadCredit,
-        subtotal = subtotal,
-        gross = gross,
-        finalScore = finalScore,
-        spreadIsCapped = isCapped
+        return ScoreBreakdown(
+            leftSum = leftSum,
+            rightSum = rightSum,
+            differenceTotal = total_difference,
+            abnormalSum = 0.0,
+            spreadCredit = spreadCredit,
+            subtotal = subtotal,
+            gross = gross,
+            finalScore = finalScore,
+            spreadIsCapped = isCapped
         )
     }
 }

@@ -77,17 +77,30 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         SITKA_BLACKTAIL("Sitka Blacktail Deer"),
         COLUMBIA_BLACKTAIL("Colombia Blacktail Deer"),
         MULE_DEER("Mule Deer"),
-        ELK("Elk"),
-        MOOSE("Moose"),
+
+        AMERICAN_ELK("American Elk"),
+        ROOSEVELT_ELK("Roosevelt Elk"),
+        TULE_ELK("Tule Elk"),
+
+        YUKON_MOOSE("Alaska-Yukon Moose"),
+        CANADA_MOOSE("Canada Moose"),
+        SHIRAS_MOOSE("Shiras Moose"),
+
         BIGHORN_SHEEP("Bighorn Sheep"),
-        DALLS_SHEEP("Dall's Sheep"),
+        DALL_SHEEP("Dall Sheep"),
         DESERT_SHEEP("Desert Sheep"),
-        STONES_SHEEP("Stone's Sheep"),
+        STONE_SHEEP("Stone Sheep"),
+
+        BARREN_GROUND_CARIBOU("Barren Ground Caribou"),
+        CC_BARREN_GROUND_CARIBOU("Central Canada Barren Ground Caribou"),
+        MOUNTAIN_CARIBOU("Mountain Caribou"),
+        QUEBEC_LABRADOR_CARIBOU("Quebec-Labrador Caribou"),
+        WOODLAND_CARIBOU("Woodland Caribou"),
+
         MOUNTAIN_GOAT("Mountain Goat"),
-        //        CARIBOU,
         BISON("Bison"),
-        MUSK_OX("Musk Ox")
-//        PRONGHORN
+        MUSK_OX("Musk Ox"),
+        PRONGHORN("Pronghorn")
     }
 
     enum class Section{
@@ -147,17 +160,15 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         object TipSpread : MeasurementType()
         object GreatestSpread : MeasurementType()
         object PointCount : MeasurementType()
+        object BrowPointCount : MeasurementType()
         object Width: MeasurementType()
+        object BrowWidth: MeasurementType()
+        object ProngLength: MeasurementType()
     }
 
     enum class Side { LEFT, RIGHT }
 
     data class ScoreBreakdown(
-        val mainBeams: PairedMeasurement,
-        val gPoints: List<PairedMeasurement>,
-        val abnormalPoints: List<MeasurementValue>,
-        val circumferences: List<PairedMeasurement>,
-        val innerSpread: Double,
         val leftSum: Double,
         val rightSum: Double,
         val differenceTotal: Double,
@@ -165,7 +176,8 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         val spreadCredit: Double,
         val subtotal: Double,
         val gross: Double,
-        val finalScore: Double
+        val finalScore: Double,
+        val spreadIsCapped: Boolean = false
     )
 
     data class MeasurementValue(
@@ -174,7 +186,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         val value: Double
     )
 
-    //I1
+
     class MeasurementStore {
 
         private val values = mutableListOf<MeasurementValue>()
@@ -200,6 +212,14 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             return PairedMeasurement(type, left, right)
         }
 
+        fun getPairedList(filter: (MeasurementType) -> Boolean): List<PairedMeasurement> {
+            return values
+                .map { it.type }
+                .filter(filter)
+                .distinct()
+                .map { getPaired(it) }
+        }
+
         fun getAll(): List<MeasurementValue> = values
         fun clear(){
             values.clear()
@@ -220,6 +240,11 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         val label: String,
         val type: MeasurementType,
         val layoutType: RowLayoutType
+    )
+
+    data class ScoreDisplayConfig(
+        val showSpread: Boolean = true,
+        val showAbnormals: Boolean = true
     )
 
     data class SectionView(
@@ -403,28 +428,6 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
 
         buildUI(currentProfile)
 
-
-        // Update toolbar title
-
-        // Reset scoring layout based on species
-//        when (currentSpecies) {
-//            Species.WHITETAIL,
-//            Species.SITKA_BLACKTAIL,
-//            Species.MULE_DEER,
-//            Species.COUES,
-//            Species.COLUMBIA_BLACKTAIL -> setupDeer(currentSpecies)
-//
-//            Species.ELK -> setupElk(currentSpecies)
-//            Species.MOOSE -> setupMoose(currentSpecies)
-//
-//            Species.BISON,
-//            Species.MOUNTAIN_GOAT,
-//            Species.MUSK_OX,
-//            Species.DALLS_SHEEP,
-//            Species.DESERT_SHEEP,
-//            Species.STONES_SHEEP,
-//            Species.BIGHORN_SHEEP -> setupSheep(currentSpecies)
-//        }
     }
 
 
@@ -485,7 +488,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
                             val newIndex = currentCount + 1
 
                             val newRow = RowConfig(
-                                label = "${config.type.name} $newIndex",
+                                label = dynamicLabelFor(rowTypeForDynamic(config.dynamicBaseType, newIndex), newIndex),
                                 type = rowTypeForDynamic(config.dynamicBaseType, newIndex),
                                 layoutType = RowLayoutType.LEFT_RIGHT
                             )
@@ -497,6 +500,8 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
                             )
 
                             currentCount++
+                            if(currentCount >= config.maxDynamicRows)
+                                btn.visibility = View.GONE
                         }
                     }
 
@@ -547,6 +552,22 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             is MeasurementType.AbnormalPoint -> MeasurementType.AbnormalPoint(newIndex)
             is MeasurementType.Circumference -> MeasurementType.Circumference(newIndex)
             else -> type // fallback for non-indexed types
+        }
+    }
+
+    private fun dynamicLabelFor(type: MeasurementType, index: Int): String {
+        return when (type) {
+            is MeasurementType.G -> {
+                val ordinal = ordinalWord(index)
+                "G$index: $ordinal Point"
+            }
+            is MeasurementType.AbnormalPoint -> {
+                "Abnormal Point $index"
+            }
+            is MeasurementType.Circumference -> {
+                "Circumference $index"
+            }
+            else -> "$index"
         }
     }
 
@@ -659,6 +680,20 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         container.addView(row)
     }
 
+    private fun scoreCardSetup(config: ScoreDisplayConfig){
+        if (config.showAbnormals)
+            root.findViewById<LinearLayout>(R.id.abnormalScoreLabel).visibility = View.VISIBLE
+        else
+            root.findViewById<LinearLayout>(R.id.abnormalScoreLabel).visibility = View.GONE
+
+        if (config.showSpread)
+            root.findViewById<LinearLayout>(R.id.spreadScoreLabel).visibility = View.VISIBLE
+        else
+            root.findViewById<LinearLayout>(R.id.spreadScoreLabel).visibility = View.GONE
+
+
+    }
+
 
     // ===============================
     // SETUP ANIMALS
@@ -671,197 +706,208 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         Species.MULE_DEER,
         Species.COLUMBIA_BLACKTAIL -> DeerProfile()
 
-        Species.ELK -> DeerProfile()
-        Species.MOOSE -> MooseProfile()
+        Species.AMERICAN_ELK -> DeerProfile()
+        Species.TULE_ELK,
+        Species.ROOSEVELT_ELK -> WesternElkProfile()
+
+        Species.SHIRAS_MOOSE,
+        Species.CANADA_MOOSE,
+        Species.YUKON_MOOSE -> MooseProfile()
+
+        Species.BARREN_GROUND_CARIBOU,
+        Species.CC_BARREN_GROUND_CARIBOU,
+        Species.MOUNTAIN_CARIBOU,
+        Species.QUEBEC_LABRADOR_CARIBOU,
+        Species.WOODLAND_CARIBOU -> CaribouProfile()
 
         Species.BIGHORN_SHEEP,
-        Species.DALLS_SHEEP,
+        Species.DALL_SHEEP,
         Species.DESERT_SHEEP,
-        Species.STONES_SHEEP,
+        Species.STONE_SHEEP,
         Species.MOUNTAIN_GOAT,
         Species.MUSK_OX,
         Species.BISON -> SheepProfile()
-        //Species.PRONGHORN -> PronghornProfile()
-        //Species.CARIBOU -> CaribouProfile()
+
+        Species.PRONGHORN -> PronghornProfile()
     }
 
-    fun setupDeer(species: Species){
-
-        root.findViewById<LinearLayout>(R.id.abnormalPointsSection).visibility = View.VISIBLE
-        root.findViewById<LinearLayout>(R.id.pointsSection).visibility = View.VISIBLE
-        root.findViewById<LinearLayout>(R.id.typeSection).visibility = View.VISIBLE
-        root.findViewById<LinearLayout>(R.id.spreadsSection).visibility = View.VISIBLE
-        root.findViewById<LinearLayout>(R.id.lengthsSection).visibility = View.VISIBLE
-        root.findViewById<LinearLayout>(R.id.circumferenceSection).visibility = View.VISIBLE
-
-
-        handleSwitch()
-        //setupDeerPoints()
-        //setupDeerSpreads()
-        //setupDeerCircumferences()
-        //setupDeerAbnormals()
-        //setupDeerLengths()
-    }
-
-    fun setupDeerLengths() {
-
-        val section = root.findViewById<View>(R.id.lengthsSection)
-        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
-        val addBtn = section.findViewById<Button>(R.id.addPointButton)
-        val title = section.findViewById<TextView>(R.id.sectionTitle)
-        val note = section.findViewById<TextView>(R.id.sectionNote)
-
-        container.removeAllViews()
-
-        title.text = "Lengths"
-        note.text = "Length of regular points and main beams"
-
-        // Main beams first
-        addStandardRow(
-            container,
-            "Main Beams",
-            MeasurementType.MainBeam
-        )
-
-        // Default G1–G4
-        for (i in 1..4) {
-            addStandardRow(
-                container,
-                "G$i: ${ordinalWord(i)} Point",
-                MeasurementType.G(i)
-            )
-        }
-
-        var count = 4
-        val max = 15
-
-        addBtn.setOnClickListener {
-            if (count >= max) { return@setOnClickListener }
-            count++
-            if (count >= max) { addBtn.visibility = View.GONE }
-            addStandardRow(
-                container,
-                "G$count: ${ordinalWord(count)} Point",
-                MeasurementType.G(count)
-            )
-        }
-    }
-
-    fun setupDeerAbnormals() {
-
-        val section = root.findViewById<View>(R.id.abnormalPointsSection)
-        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
-        val addBtn = section.findViewById<Button>(R.id.addPointButton)
-        val title = section.findViewById<TextView>(R.id.sectionTitle)
-        val note = section.findViewById<TextView>(R.id.sectionNote)
-
-        container.removeAllViews()
-
-        title.text = "Abnormal Points"
-        note.text = "Length of abnormal points (droptines, points off of a burr, points off of other points, etc.)"
-
-        // Default 2 rows
-        for (i in 1..2) {
-            addStandardRow(
-                container,
-                "Abnormal Point $i",
-                MeasurementType.AbnormalPoint(i)
-            )
-        }
-
-        var count = 2
-        val max = 50
-
-        addBtn.setOnClickListener {
-            if (count >= max) { return@setOnClickListener }
-            count++
-            if (count >= max) { addBtn.visibility = View.GONE }
-            addStandardRow(
-                container,
-                "Abnormal Point $count",
-                MeasurementType.AbnormalPoint(count),
-            )
-        }
-    }
-
-    fun setupDeerCircumferences() {
-
-        val section = root.findViewById<View>(R.id.circumferenceSection)
-        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
-        val title = section.findViewById<TextView>(R.id.sectionTitle)
-        val note = section.findViewById<TextView>(R.id.sectionNote)
-        val subnote = section.findViewById<TextView>(R.id.sectionSubnote)
-
-        container.removeAllViews()
-
-        title.text = "Circumferences"
-        note.text = "Smallest circumferences of main beam between points"
-        subnote.text = "Note: If a buck does not have enough points to record all circumference measurements, the circumference between the main beam and the last point should be done halfway between the tip of the beam and the base of the last point."
-
-        addStandardRow(container, "Smallest circumference between G1 and the burr", MeasurementType.Circumference(1))
-        for (i in 2..4) {
-            var j = i-1
-            addStandardRow(
-                container,
-                "Smallest circumference between G$j and G$i",
-                MeasurementType.Circumference(i)
-            )
-        }
-    }
-
-    fun setupDeerSpreads() {
-
-        val section = root.findViewById<View>(R.id.spreadsSection)
-        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
-        val title = section.findViewById<TextView>(R.id.sectionTitle)
-        val note = section.findViewById<TextView>(R.id.sectionNote)
-
-        container.removeAllViews()
-
-        title.text = "Spreads"
-        note.text = "Distance that the antlers span"
-
-        addSingleMeasurementRow(container, "Tip to Tip (Main Beams)", MeasurementType.TipSpread)
-        addSingleMeasurementRow(container, "Greatest Spread", MeasurementType.GreatestSpread)
-        addSingleMeasurementRow(container, "Inner Spread", MeasurementType.InnerSpread)
-    }
-
-    fun setupDeerPoints() {
-
-        val section = root.findViewById<View>(R.id.pointsSection)
-        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
-        val title = section.findViewById<TextView>(R.id.sectionTitle)
-        val note = section.findViewById<TextView>(R.id.sectionNote)
-
-        container.removeAllViews()
-
-        title.text = "Points"
-        note.text = "Number of points that are at least 1 inch long"
-
-        addNoFracRow(container, "", MeasurementType.PointCount)
-    }
-
-
-    private fun setupElk(species: Species){
-        handleSwitch()
-        //setupDeerAbnormals()
-        //setupDeerLengths()
-    }
-
-    private fun setupMoose(species: Species){
-        handleSwitch()
-        //setupDeerAbnormals()
-        //setupDeerLengths()
-    }
-
-    private fun setupSheep(species: Species){
-        root.findViewById<LinearLayout>(R.id.spreadsSection).visibility = View.VISIBLE
-        root.findViewById<LinearLayout>(R.id.lengthsSection).visibility = View.VISIBLE
-        root.findViewById<LinearLayout>(R.id.circumferenceSection).visibility = View.VISIBLE
-
-        //setupDeerLengths()
-        //setupDeerCircumferences()
-    }
+//    fun setupDeer(species: Species){
+//
+//        root.findViewById<LinearLayout>(R.id.abnormalPointsSection).visibility = View.VISIBLE
+//        root.findViewById<LinearLayout>(R.id.pointsSection).visibility = View.VISIBLE
+//        root.findViewById<LinearLayout>(R.id.typeSection).visibility = View.VISIBLE
+//        root.findViewById<LinearLayout>(R.id.spreadsSection).visibility = View.VISIBLE
+//        root.findViewById<LinearLayout>(R.id.lengthsSection).visibility = View.VISIBLE
+//        root.findViewById<LinearLayout>(R.id.circumferenceSection).visibility = View.VISIBLE
+//
+//
+//        handleSwitch()
+//        //setupDeerPoints()
+//        //setupDeerSpreads()
+//        //setupDeerCircumferences()
+//        //setupDeerAbnormals()
+//        //setupDeerLengths()
+//    }
+//
+//    fun setupDeerLengths() {
+//
+//        val section = root.findViewById<View>(R.id.lengthsSection)
+//        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
+//        val addBtn = section.findViewById<Button>(R.id.addPointButton)
+//        val title = section.findViewById<TextView>(R.id.sectionTitle)
+//        val note = section.findViewById<TextView>(R.id.sectionNote)
+//
+//        container.removeAllViews()
+//
+//        title.text = "Lengths"
+//        note.text = "Length of regular points and main beams"
+//
+//        // Main beams first
+//        addStandardRow(
+//            container,
+//            "Main Beams",
+//            MeasurementType.MainBeam
+//        )
+//
+//        // Default G1–G4
+//        for (i in 1..4) {
+//            addStandardRow(
+//                container,
+//                "G$i: ${ordinalWord(i)} Point",
+//                MeasurementType.G(i)
+//            )
+//        }
+//
+//        var count = 4
+//        val max = 15
+//
+//        addBtn.setOnClickListener {
+//            if (count >= max) { return@setOnClickListener }
+//            count++
+//            if (count >= max) { addBtn.visibility = View.GONE }
+//            addStandardRow(
+//                container,
+//                "G$count: ${ordinalWord(count)} Point",
+//                MeasurementType.G(count)
+//            )
+//        }
+//    }
+//
+//    fun setupDeerAbnormals() {
+//
+//        val section = root.findViewById<View>(R.id.abnormalPointsSection)
+//        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
+//        val addBtn = section.findViewById<Button>(R.id.addPointButton)
+//        val title = section.findViewById<TextView>(R.id.sectionTitle)
+//        val note = section.findViewById<TextView>(R.id.sectionNote)
+//
+//        container.removeAllViews()
+//
+//        title.text = "Abnormal Points"
+//        note.text = "Length of abnormal points (droptines, points off of a burr, points off of other points, etc.)"
+//
+//        // Default 2 rows
+//        for (i in 1..2) {
+//            addStandardRow(
+//                container,
+//                "Abnormal Point $i",
+//                MeasurementType.AbnormalPoint(i)
+//            )
+//        }
+//
+//        var count = 2
+//        val max = 50
+//
+//        addBtn.setOnClickListener {
+//            if (count >= max) { return@setOnClickListener }
+//            count++
+//            if (count >= max) { addBtn.visibility = View.GONE }
+//            addStandardRow(
+//                container,
+//                "Abnormal Point $count",
+//                MeasurementType.AbnormalPoint(count),
+//            )
+//        }
+//    }
+//
+//    fun setupDeerCircumferences() {
+//
+//        val section = root.findViewById<View>(R.id.circumferenceSection)
+//        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
+//        val title = section.findViewById<TextView>(R.id.sectionTitle)
+//        val note = section.findViewById<TextView>(R.id.sectionNote)
+//        val subnote = section.findViewById<TextView>(R.id.sectionSubnote)
+//
+//        container.removeAllViews()
+//
+//        title.text = "Circumferences"
+//        note.text = "Smallest circumferences of main beam between points"
+//        subnote.text = "Note: If a buck does not have enough points to record all circumference measurements, the circumference between the main beam and the last point should be done halfway between the tip of the beam and the base of the last point."
+//
+//        addStandardRow(container, "Smallest circumference between G1 and the burr", MeasurementType.Circumference(1))
+//        for (i in 2..4) {
+//            var j = i-1
+//            addStandardRow(
+//                container,
+//                "Smallest circumference between G$j and G$i",
+//                MeasurementType.Circumference(i)
+//            )
+//        }
+//    }
+//
+//    fun setupDeerSpreads() {
+//
+//        val section = root.findViewById<View>(R.id.spreadsSection)
+//        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
+//        val title = section.findViewById<TextView>(R.id.sectionTitle)
+//        val note = section.findViewById<TextView>(R.id.sectionNote)
+//
+//        container.removeAllViews()
+//
+//        title.text = "Spreads"
+//        note.text = "Distance that the antlers span"
+//
+//        addSingleMeasurementRow(container, "Tip to Tip (Main Beams)", MeasurementType.TipSpread)
+//        addSingleMeasurementRow(container, "Greatest Spread", MeasurementType.GreatestSpread)
+//        addSingleMeasurementRow(container, "Inner Spread", MeasurementType.InnerSpread)
+//    }
+//
+//    fun setupDeerPoints() {
+//
+//        val section = root.findViewById<View>(R.id.pointsSection)
+//        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
+//        val title = section.findViewById<TextView>(R.id.sectionTitle)
+//        val note = section.findViewById<TextView>(R.id.sectionNote)
+//
+//        container.removeAllViews()
+//
+//        title.text = "Points"
+//        note.text = "Number of points that are at least 1 inch long"
+//
+//        addNoFracRow(container, "", MeasurementType.PointCount)
+//    }
+//
+//
+//    private fun setupElk(species: Species){
+//        handleSwitch()
+//        //setupDeerAbnormals()
+//        //setupDeerLengths()
+//    }
+//
+//    private fun setupMoose(species: Species){
+//        handleSwitch()
+//        //setupDeerAbnormals()
+//        //setupDeerLengths()
+//    }
+//
+//    private fun setupSheep(species: Species){
+//        root.findViewById<LinearLayout>(R.id.spreadsSection).visibility = View.VISIBLE
+//        root.findViewById<LinearLayout>(R.id.lengthsSection).visibility = View.VISIBLE
+//        root.findViewById<LinearLayout>(R.id.circumferenceSection).visibility = View.VISIBLE
+//
+//        //setupDeerLengths()
+//        //setupDeerCircumferences()
+//    }
 
 
 
@@ -1028,11 +1074,11 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     private fun recalcScore() {
         currentScore = currentProfile?.calculateScore(measurementStore, buckType)
             ?: return
+        val display = currentProfile?.getScoreDisplayConfig() ?: return
+        scoreCardSetup(display)
 
-        // ************NEED TO MOVE**************
-        var spreadCredit = currentScore.innerSpread
-        if (spreadCredit > max(currentScore.mainBeams.left, currentScore.mainBeams.right)){
-            spreadCredit = max(currentScore.mainBeams.left, currentScore.mainBeams.right)
+
+        if (currentScore.spreadIsCapped){
             spreadCreditLabel.visibility = View.VISIBLE
             spreadLabel.visibility = View.GONE
             spreadCreditNote.visibility = View.VISIBLE
@@ -1042,9 +1088,8 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             spreadLabel.visibility = View.VISIBLE
             spreadCreditNote.visibility = View.GONE
         }
-        // ************************************
 
-        spreadCreditText.text = "${doubleToBC(spreadCredit)}"
+        spreadCreditText.text = "${doubleToBC(currentScore.spreadCredit)}"
         leftSumText.text = "${doubleToBC(currentScore.leftSum)}"
         rightSumText.text = "${doubleToBC(currentScore.rightSum)}"
         subtotalText.text = "${doubleToBC(currentScore.subtotal)}"
@@ -1180,7 +1225,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         val greatestSpreadFractionValue = greatestSpreadFractions.selectedItemPosition / 8.0
         writer.text("Greatest Spread: ${doubleToBC(greatestSpreadInches + greatestSpreadFractionValue)}",28)
 
-        writer.text("Inner Spread: ${doubleToBC(score.innerSpread)}",28)
+        writer.text("Inner Spread: ${doubleToBC(measurementStore.get(MeasurementType.InnerSpread))}",28)
 
         paint.textSize = 18f
         paint.isFakeBoldText = true
@@ -1195,10 +1240,10 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         paint.isFakeBoldText = false
 
 
-        val beams = measurementStore.getPaired(MeasurementType.MainBeam)//score.mainBeams
+        val beams = measurementStore.getPaired(MeasurementType.MainBeam)
         writer.row(beams.type.displayMeasurementName(), doubleToBC(beams.left), doubleToBC(beams.right), doubleToBC(beams.difference()))
 
-        val validPoints = score.gPoints.filter{it.sum() > 0}
+        val validPoints = measurementStore.getPairedList{it is MeasurementType.G}.filter{it.sum() > 0}
         for (p in validPoints) {
             writer.row(
                 p.type.displayMeasurementName(),
@@ -1220,7 +1265,8 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         writer.row("Measurement","Left","Right","Difference")
         paint.isFakeBoldText = false
 
-        for (p in score.circumferences) {
+        val circumferences = measurementStore.getPairedList { it is MeasurementType.Circumference }
+        for (p in circumferences) {
             writer.row(
                 p.type.displayMeasurementName(),
                 doubleToBC(p.left),
@@ -1231,8 +1277,9 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
 
         writer.line()
 
+        val abnormalPoints = measurementStore.getAll().filter { it.type is MeasurementType.AbnormalPoint }
         writer.row("Totals", "${leftSumText.text}", "${rightSumText.text}", "${differenceText.text}")
-        writer.row("Abnormal Totals", "${doubleToBC(score.abnormalPoints.filter{ it.side == Side.LEFT }.sumOf{it.value})}", "${doubleToBC(score.abnormalPoints.filter{ it.side == Side.RIGHT }.sumOf{it.value})}", "")
+        writer.row("Abnormal Totals", "${doubleToBC(abnormalPoints.filter{ it.side == Side.LEFT }.sumOf{it.value})}", "${doubleToBC(abnormalPoints.filter{ it.side == Side.RIGHT }.sumOf{it.value})}", "")
         writer.line()
 
         paint.isFakeBoldText = true
@@ -1279,7 +1326,10 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             MeasurementType.GreatestSpread -> "Greatest Spread"
             MeasurementType.TipSpread -> "Tip to Tip Spread"
             MeasurementType.PointCount -> "Number of Points"
-            MeasurementType.Width -> "Width"
+            MeasurementType.Width -> "Width of Palms"
+            MeasurementType.BrowWidth -> "Width of Brow Palms"
+            MeasurementType.ProngLength -> "Prong Length"
+            MeasurementType.BrowPointCount -> "Number of Brow Points"
         }
     }
 
@@ -1403,27 +1453,6 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             else -> "$whole $frac/8"
         }
     }
-
-    //I1
-//    fun paired(type: MeasurementType): PairedMeasurement {
-//        val left = measurements
-//            .firstOrNull { it.type == type && it.side == Side.LEFT }?.value() ?:0.0
-//
-//        val right = measurements
-//            .firstOrNull { it.type == type && it.side == Side.RIGHT }?.value() ?:0.0
-//
-//        return PairedMeasurement(type, left, right)
-//    }
-//
-//    fun totalDifference(pairs: List<PairedMeasurement>): Double {
-//        return pairs.sumOf { it.difference() }
-//    }
-//
-//    fun leftSum(pairs: List<PairedMeasurement>): Double =
-//        pairs.sumOf { it.left }
-//
-//    fun rightSum(pairs: List<PairedMeasurement>): Double =
-//        pairs.sumOf { it.right }
 
     fun scaleBitmap(
         bitmap: Bitmap,

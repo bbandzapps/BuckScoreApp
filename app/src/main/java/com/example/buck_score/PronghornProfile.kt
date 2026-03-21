@@ -8,7 +8,7 @@ import com.example.buck_score.ScoreFragment.ScoreBreakdown
 import com.google.android.material.color.utilities.Score
 import kotlin.math.max
 
-class SheepProfile : ScoringProfile {
+class PronghornProfile : ScoringProfile {
 
     override fun getVisibleSections() = listOf(
         ScoreFragment.Section.LENGTHS,
@@ -30,27 +30,32 @@ class SheepProfile : ScoringProfile {
                 subNote = null,
                 rows = listOf(
                     RowConfig(
-                        label = "Greatest Spread",
-                        type = ScoreFragment.MeasurementType.GreatestSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
-                    ),
-                    RowConfig(
                         label = "Tip to Tip Spread",
                         type = ScoreFragment.MeasurementType.TipSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE
-                    )
+                    ),
+                    RowConfig(
+                        label = "Inner Spread",
+                        type = ScoreFragment.MeasurementType.InnerSpread,
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                    ),
                 ),
                 maxDynamicRows = 0
             ),
             ScoreFragment.SectionConfig(
                 type = ScoreFragment.Section.LENGTHS,
                 title = "Lengths",
-                note = "Entire length of each horn",
+                note = "Entire length of each horn and prong",
                 subNote = null,
                 rows = listOf(
                     RowConfig(
-                        label = "",
+                        label = "Length of main horns",
                         type = ScoreFragment.MeasurementType.MainBeam,
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                    ),
+                    RowConfig(
+                        label = "Length of prongs",
+                        type = ScoreFragment.MeasurementType.ProngLength,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
@@ -103,19 +108,18 @@ class SheepProfile : ScoringProfile {
             .map { store.getPaired(it) }
 
         val mainBeams = store.getPaired(MeasurementType.MainBeam)
+        val prongLengths = store.getPaired(MeasurementType.ProngLength)
 
-        val total_difference = getTotalDifference(circumferences) + mainBeams.difference()
+        val total_difference = getTotalDifference(circumferences) + mainBeams.difference() + prongLengths.difference()
 
 
-        val leftSum = leftSum(circumferences) + mainBeams.left
-        val rightSum = rightSum(circumferences) + mainBeams.right
+        val leftSum = leftSum(circumferences) + mainBeams.left + prongLengths.left
+        val rightSum = rightSum(circumferences) + mainBeams.right + prongLengths.right
 
         val subtotal = leftSum + rightSum
         var finalScore = subtotal - total_difference
 
-
         gross = leftSum + rightSum
-
 
         return ScoreBreakdown(
             leftSum = leftSum,

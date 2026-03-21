@@ -8,7 +8,7 @@ import com.example.buck_score.ScoreFragment.ScoreBreakdown
 import com.google.android.material.color.utilities.Score
 import kotlin.math.max
 
-class DeerProfile : ScoringProfile {
+class WesternElkProfile : ScoringProfile {
 
     override fun getVisibleSections() = listOf(
         ScoreFragment.Section.TYPE,
@@ -204,16 +204,16 @@ class DeerProfile : ScoringProfile {
         gross = innerSpread + leftSum + rightSum + abnormalSum
 
 
-    return ScoreBreakdown(
-        leftSum = leftSum,
-        rightSum = rightSum,
-        differenceTotal = total_difference,
-        abnormalSum = abnormalSum,
-        spreadCredit = spreadCredit,
-        subtotal = subtotal,
-        gross = gross,
-        finalScore = finalScore,
-        spreadIsCapped = isCapped
+        return ScoreBreakdown(
+            leftSum = leftSum,
+            rightSum = rightSum,
+            differenceTotal = total_difference,
+            abnormalSum = abnormalSum,
+            spreadCredit = spreadCredit,
+            subtotal = subtotal,
+            gross = gross,
+            finalScore = finalScore,
+            spreadIsCapped = isCapped
         )
     }
 }

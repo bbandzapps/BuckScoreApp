@@ -19,6 +19,11 @@ class MooseProfile : ScoringProfile {
         ScoreFragment.Section.ABNORMALS
     )
 
+    override fun getScoreDisplayConfig() = ScoreFragment.ScoreDisplayConfig(
+        showSpread = true,
+        showAbnormals = false
+    )
+
     override fun getSectionConfigs(): List<ScoreFragment.SectionConfig> {
         //TODO("Not yet implemented")
         return listOf(
@@ -120,7 +125,7 @@ class MooseProfile : ScoringProfile {
         // We will move deer scoring here later.
         //return ScoreFragment.ScoreBreakdown()
         //TODO("Not yet implemented")
-        var total = 0.0
+        var gross = 0.0
 
         val normalPoints = store.getPaired(MeasurementType.PointCount)
         val circumferences = store.getPaired(MeasurementType.Circumference(1))
@@ -145,22 +150,17 @@ class MooseProfile : ScoringProfile {
         val subtotal = leftSum + rightSum + greatestSpread
         var finalScore = 0.0
 
-        total = greatestSpread + leftSum + rightSum + abnormalSum
+        gross = greatestSpread + leftSum + rightSum
 
 
         return ScoreBreakdown(
-            mainBeams = lengths,
-            gPoints = emptyList(),
-            abnormalPoints = abnormalPoints,
-            innerSpread = greatestSpread,
-            circumferences = emptyList(),
             leftSum = leftSum,
             rightSum = rightSum,
             differenceTotal = total_difference,
             abnormalSum = abnormalSum,
-            spreadCredit = 0.0,
+            spreadCredit = greatestSpread,
             subtotal = subtotal,
-            gross = total,
+            gross = gross,
             finalScore = finalScore
         )
     }
