@@ -21,7 +21,8 @@ class MooseProfile : ScoringProfile {
 
     override fun getScoreDisplayConfig() = ScoreFragment.ScoreDisplayConfig(
         showSpread = true,
-        showAbnormals = false
+        showAbnormals = false,
+        showCrownPointScore = false
     )
 
     override fun getSectionConfigs(): List<ScoreFragment.SectionConfig> {
@@ -160,6 +161,7 @@ class MooseProfile : ScoringProfile {
             abnormalSum = abnormalSum,
             spreadCredit = greatestSpread,
             subtotal = subtotal,
+            crownPointScore = 0.0,
             gross = gross,
             finalScore = finalScore
         )

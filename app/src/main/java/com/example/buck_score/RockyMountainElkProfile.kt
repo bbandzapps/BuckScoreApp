@@ -8,19 +8,20 @@ import com.example.buck_score.ScoreFragment.ScoreBreakdown
 import com.google.android.material.color.utilities.Score
 import kotlin.math.max
 
-class CaribouProfile : ScoringProfile {
+class RockyMountainElkProfile : ScoringProfile {
 
     override fun getVisibleSections() = listOf(
+        ScoreFragment.Section.TYPE,
         ScoreFragment.Section.POINT_COUNT,
         ScoreFragment.Section.LENGTHS,
         ScoreFragment.Section.SPREADS,
-        ScoreFragment.Section.WIDTHS,
-        ScoreFragment.Section.CIRCUMFERENCES
+        ScoreFragment.Section.CIRCUMFERENCES,
+        ScoreFragment.Section.ABNORMALS
     )
 
     override fun getScoreDisplayConfig() = ScoreFragment.ScoreDisplayConfig(
         showSpread = true,
-        showAbnormals = false,
+        showAbnormals = true,
         showCrownPointScore = false
     )
 
@@ -29,17 +30,12 @@ class CaribouProfile : ScoringProfile {
             ScoreFragment.SectionConfig(
                 type = ScoreFragment.Section.POINT_COUNT,
                 title = "Points",
-                note = "Number of points on the antlers and the brow tines",
+                note = "Number of points that are at least 1 inch long",
                 subNote = null,
                 rows = listOf(
                     RowConfig(
-                        label = "Number of points on main antlers",
+                        label = "",
                         type = ScoreFragment.MeasurementType.PointCount,
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
-                    ),
-                    RowConfig(
-                        label = "Number of points on brows",
-                        type = ScoreFragment.MeasurementType.BrowPointCount,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
                     )
                 ),
@@ -62,7 +58,7 @@ class CaribouProfile : ScoringProfile {
                         layoutType = ScoreFragment.RowLayoutType.SINGLE
                     ),
                     RowConfig(
-                        label = "Inner Spread",
+                        label = "Inside Main Beams",
                         type = ScoreFragment.MeasurementType.InnerSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE
                     )
@@ -70,28 +66,29 @@ class CaribouProfile : ScoringProfile {
                 maxDynamicRows = 0
             ),
             ScoreFragment.SectionConfig(
-                type = ScoreFragment.Section.WIDTHS,
-                title = "Widths",
-                note = "Widths of the antlers and the brow palms",
+                type = ScoreFragment.Section.ABNORMALS,
+                title = "Abnormal Points",
+                note = "Length of abnormal points (droptines, points off of a burr, points off of other points, etc.)",
                 subNote = null,
                 rows = listOf(
                     RowConfig(
-                        label = "Brow palm",
-                        type = ScoreFragment.MeasurementType.BrowWidth,
+                        label = "Abnormal Point 1",
+                        type = ScoreFragment.MeasurementType.AbnormalPoint(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Top Palm",
-                        type = ScoreFragment.MeasurementType.Width,
+                        label = "Abnormal Point 2",
+                        type = ScoreFragment.MeasurementType.AbnormalPoint(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
-                maxDynamicRows = 0
+                maxDynamicRows = 50,
+                dynamicBaseType = MeasurementType.AbnormalPoint(1)
             ),
             ScoreFragment.SectionConfig(
                 type = ScoreFragment.Section.LENGTHS,
                 title = "Lengths",
-                note = "Length of regular points and brows",
+                note = "Length of regular points and main beams",
                 subNote = null,
                 rows = listOf(
                     RowConfig(
@@ -100,56 +97,67 @@ class CaribouProfile : ScoringProfile {
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "First Point (Brow Palm)",
+                        label = "G1: First Point",
                         type = ScoreFragment.MeasurementType.G(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Second Point (Bez)",
+                        label = "G2: Second Point",
                         type = ScoreFragment.MeasurementType.G(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Rear Point",
+                        label = "G3: Third Point",
                         type = ScoreFragment.MeasurementType.G(3),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Second Longest Top Point",
+                        label = "G4: Fourth Point",
                         type = ScoreFragment.MeasurementType.G(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Longest Top Point",
+                        label = "G5: Fifth Point",
                         type = ScoreFragment.MeasurementType.G(5),
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                    ),
+                    RowConfig(
+                        label = "G6: Sixth Point",
+                        type = ScoreFragment.MeasurementType.G(6),
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                    ),
+                    RowConfig(
+                        label = "G7: Seventh Point",
+                        type = ScoreFragment.MeasurementType.G(7),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
-                maxDynamicRows = 0
+                maxDynamicRows = 15,
+                dynamicBaseType = MeasurementType.G(1)
             ),
             ScoreFragment.SectionConfig(
                 type = ScoreFragment.Section.CIRCUMFERENCES,
                 title = "Circumferences",
-                note = "Smallest circumferences of main beam between major points",
-                subNote = null,
+                note = "Smallest circumferences of main beam between points",
+                subNote = "Note: If an animal does not have enough points to record all circumference measurements, the circumference between the main beam and the last point should be done halfway between the tip of the beam and the base of the last point.",
                 rows = listOf(
                     RowConfig(
-                        label = "Smallest circumference between Brow and Bez points",
+                        label = "Smallest circumference between first and second points",
                         type = ScoreFragment.MeasurementType.Circumference(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Smallest circumference between Bez and Rear points",
+                        label = "Smallest circumference between second and third points",
                         type = ScoreFragment.MeasurementType.Circumference(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Smallest circumference between Rear point and first top point",
+                        label = "Smallest circumference between third and fourth points",
                         type = ScoreFragment.MeasurementType.Circumference(3),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
-                        label = "Smallest circumference between two longest top palm points",
+                        label = "Smallest circumference between fourth and fifth points",
                         type = ScoreFragment.MeasurementType.Circumference(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
@@ -179,16 +187,12 @@ class CaribouProfile : ScoringProfile {
             .map { store.getPaired(it) }
 
         val mainBeams = store.getPaired(MeasurementType.MainBeam)
-        val widths = store.getPaired(MeasurementType.Width)
-        val browWidths = store.getPaired(MeasurementType.BrowWidth)
-        val pointCount = store.getPaired(MeasurementType.PointCount)
-        val browPoints = store.getPaired(MeasurementType.BrowPointCount)
 
         val total_difference =
-            getTotalDifference(gPoints) + getTotalDifference(circumferences) +
-                    mainBeams.difference() + widths.difference() +
-                    pointCount.difference() - store.getPaired(MeasurementType.G(1)).difference()
+            getTotalDifference(gPoints) + getTotalDifference(circumferences) + mainBeams.difference()
 
+        val abnormalPoints = store.getAll().filter { it.type is MeasurementType.AbnormalPoint }
+        val abnormalSum = abnormalPoints.sumOf { it.value }
 
         val innerSpread = store.getAll()
             .filter { it.type is MeasurementType.InnerSpread }
@@ -202,24 +206,25 @@ class CaribouProfile : ScoringProfile {
         }
 
 
-        val leftSum = leftSum(gPoints) + leftSum(circumferences) +
-                mainBeams.left + widths.left + browWidths.left +
-                browPoints.left + pointCount.left
-        val rightSum = rightSum(gPoints) + rightSum(circumferences) +
-                mainBeams.right + widths.right + browWidths.right +
-                browPoints.right + pointCount.right
+
+        val leftSum = leftSum(gPoints) + leftSum(circumferences) + mainBeams.left
+        val rightSum = rightSum(gPoints) + rightSum(circumferences) + mainBeams.right
 
         val subtotal = leftSum + rightSum + spreadCredit
-        var finalScore = subtotal - total_difference
+        var finalScore = 0.0
+        if (buckType == BuckType.TYPICAL)
+            finalScore = max(0.0, (subtotal - total_difference - abnormalSum))
+        else
+            finalScore = subtotal - total_difference + abnormalSum
 
-        gross = innerSpread + leftSum + rightSum
+        gross = innerSpread + leftSum + rightSum + abnormalSum
 
 
         return ScoreBreakdown(
             leftSum = leftSum,
             rightSum = rightSum,
             differenceTotal = total_difference,
-            abnormalSum = 0.0,
+            abnormalSum = abnormalSum,
             spreadCredit = spreadCredit,
             subtotal = subtotal,
             crownPointScore = 0.0,
@@ -229,4 +234,3 @@ class CaribouProfile : ScoringProfile {
         )
     }
 }
-

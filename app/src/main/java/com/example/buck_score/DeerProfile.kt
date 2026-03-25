@@ -21,7 +21,8 @@ class DeerProfile : ScoringProfile {
 
     override fun getScoreDisplayConfig() = ScoreFragment.ScoreDisplayConfig(
         showSpread = true,
-        showAbnormals = true
+        showAbnormals = true,
+        showCrownPointScore = false
     )
 
     override fun getSectionConfigs(): List<ScoreFragment.SectionConfig> {
@@ -211,6 +212,7 @@ class DeerProfile : ScoringProfile {
         abnormalSum = abnormalSum,
         spreadCredit = spreadCredit,
         subtotal = subtotal,
+        crownPointScore = 0.0,
         gross = gross,
         finalScore = finalScore,
         spreadIsCapped = isCapped

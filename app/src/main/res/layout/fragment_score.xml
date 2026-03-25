@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:title="Whitetail Deer"
+        app:titleTextColor="@color/white"
         app:titleCentered="true"
         android:fitsSystemWindows="true"
         app:menu="@menu/species_menu" />
@@ -45,6 +46,14 @@
                 android:layout_marginBottom="8dp"
                 android:text="New Whitetail Deer"
                 android:singleLine="true" />
+
+            <ImageView
+                android:id="@+id/speciesImage"
+                android:layout_width="match_parent"
+                android:layout_height="450dp"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:layout_marginBottom="12dp"/>
 
 
             <!-- ROW: Typical/Nontypical switch -->
@@ -113,6 +122,11 @@
 
             <!-- ROW: Spreads -->
             <include layout="@layout/section_spreads"/>
+
+            <!-- ROW: Crown Points -->
+            <include
+                android:id="@+id/crownPointsSection"
+                layout="@layout/section_point_lengths" />
 
 
             <!-- ROW: Abnormal Points -->
@@ -307,6 +321,32 @@
 
                     <TextView
                         android:id="@+id/rightSumText"
+                        android:text="0"
+                        android:textSize="20dp"
+                        android:gravity="end"
+                        android:paddingEnd="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Row: Crown Total -->
+                <LinearLayout
+                    android:id="@+id/crownScoreLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:text="Crown"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:paddingStart="32dp"
+                        android:textSize="20dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/crownPointSumText"
                         android:text="0"
                         android:textSize="20dp"
                         android:gravity="end"

@@ -18,7 +18,8 @@ class SheepProfile : ScoringProfile {
 
     override fun getScoreDisplayConfig() = ScoreFragment.ScoreDisplayConfig(
         showSpread = false,
-        showAbnormals = false
+        showAbnormals = false,
+        showCrownPointScore = false
     )
 
     override fun getSectionConfigs(): List<ScoreFragment.SectionConfig> {
@@ -124,6 +125,7 @@ class SheepProfile : ScoringProfile {
             abnormalSum = 0.0,
             spreadCredit = 0.0,
             subtotal = subtotal,
+            crownPointScore = 0.0,
             gross = gross,
             finalScore = finalScore
         )
