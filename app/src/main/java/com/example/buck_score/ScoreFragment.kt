@@ -873,19 +873,6 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     }
 
 
-    private fun scoreFromInput(
-        inchesField: EditText,
-        fractionSpinner: Spinner? = null
-    ): Double {
-        val whole = inchesField.text.toString().toIntOrNull() ?: 0
-        if (fractionSpinner == null)
-            return whole + 0.0
-
-        val fractionIndex = fractionSpinner.selectedItemPosition
-        return whole + (fractionIndex * 0.125)
-    }
-
-
     // ===============================
     // PDF Download Functionality
     // ===============================
@@ -1298,11 +1285,11 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
 
             Species.ROCKY_MOUNTAIN_ELK -> R.drawable.final_white_rocky_mountain_elk_nobg
             Species.ROOSEVELT_ELK,
-            Species.TULE_ELK -> R.drawable.final_outline_mule_deer_nobg
+            Species.TULE_ELK -> R.drawable.final_white_western_elk_nobg
 
             Species.SHIRAS_MOOSE,
             Species.CANADA_MOOSE,
-            Species.YUKON_MOOSE -> R.drawable.final_outline_mule_deer_nobg
+            Species.YUKON_MOOSE -> R.drawable.final_white_moose_nobg
 
             Species.CC_BARREN_GROUND_CARIBOU,
             Species.WOODLAND_CARIBOU,
@@ -1316,9 +1303,9 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             Species.DESERT_SHEEP -> R.drawable.final_white_sheep_nobg
 
             Species.PRONGHORN -> R.drawable.final_white_sheep_nobg
-            Species.MUSK_OX -> R.drawable.final_white_sheep_nobg
+            Species.MUSK_OX -> R.drawable.final_white_musk_ox_nobg
             Species.BISON -> R.drawable.final_white_sheep_nobg
-            Species.MOUNTAIN_GOAT -> R.drawable.final_white_sheep_nobg
+            Species.MOUNTAIN_GOAT -> R.drawable.final_white_mountain_goat_nobg
         }
     }
 
