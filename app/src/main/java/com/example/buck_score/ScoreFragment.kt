@@ -119,7 +119,8 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     enum class RowLayoutType {
         LEFT_RIGHT,          // addStandardRow
         SINGLE,              // addSingleMeasurementRow
-        LEFT_RIGHT_NO_FRAC   // addNoFracRow
+        LEFT_RIGHT_NO_FRAC,  // addNoFracRow
+        LOC                  // addLocRow
     }
 
     // ===============================
@@ -138,9 +139,16 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             if(fractionField == null)
                 fraction = 0.0
             else
-                fraction = fractionField.selectedItemPosition / 8.0
+                when(type) {
+                    is MeasurementType.Loc -> fraction = getFractionValue(fractionField, 32)
+                    //fraction = fractionField.selectedItemPosition / 8.0
+                    else -> fraction = getFractionValue(fractionField, 8)
+                }
 
             return whole + fraction
+        }
+        fun getFractionValue(spinner: Spinner, denominator: Int): Double {
+            return spinner.selectedItemPosition.toDouble() / denominator
         }
     }
 
@@ -167,6 +175,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         object BrowWidth: MeasurementType()
         object ProngLength: MeasurementType()
         data class CrownPoint(val index: Int) : MeasurementType()
+        data class Loc(val index: Int) : MeasurementType()
     }
 
     enum class Side { LEFT, RIGHT }
@@ -271,6 +280,13 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
 
     val eighthFractions = arrayOf(
         "0/8", "1/8", "2/8", "3/8", "4/8", "5/8", "6/8", "7/8"
+    )
+
+    val locationFractions = arrayOf(
+        "0/32", "1/32", "1/16", "3/32", "1/8", "5/32", "3/16", "7/32",
+        "2/8", "9/32", "5/16", "11/32", "3/8", "13/32", "7/16", "15/32",
+        "4/8", "17/32", "9/16", "19/32", "5/8", "21/32", "11/16", "23/32",
+        "6/8", "25/32", "13/16", "27/32", "7/8", "29/32", "15/16", "31/32"
     )
 
 
@@ -600,6 +616,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         RowLayoutType.SINGLE -> addSingleMeasurementRow(container, label, type)
         RowLayoutType.LEFT_RIGHT_NO_FRAC -> addNoFracRow(container, label, type)
         RowLayoutType.LEFT_RIGHT -> addStandardRow(container, label, type)
+        RowLayoutType.LOC -> addLocRow(container, label, type)
     }
 
     private fun addStandardRow(
@@ -696,6 +713,33 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         container.addView(row)
     }
 
+    private fun addLocRow(
+        container: LinearLayout,
+        label: String,
+        type: MeasurementType
+    ) {
+        val row = layoutInflater.inflate(
+            R.layout.row_left,
+            container,
+            false
+        )
+
+        if (label == "")
+            row.findViewById<TextView>(R.id.measurementLabel).visibility = View.GONE
+        else
+            row.findViewById<TextView>(R.id.measurementLabel).text = label
+
+
+        registerMeasurementViews(
+            type,
+            Side.LEFT,
+            row.findViewById<EditText>(R.id.inches),
+            row.findViewById<Spinner>(R.id.fraction)
+        )
+
+        container.addView(row)
+    }
+
     private fun scoreCardSetup(config: ScoreDisplayConfig){
         if (config.showAbnormals)
             root.findViewById<LinearLayout>(R.id.abnormalScoreLabel).visibility = View.VISIBLE
@@ -744,10 +788,10 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         Species.BIGHORN_SHEEP,
         Species.DALL_SHEEP,
         Species.DESERT_SHEEP,
-        Species.STONE_SHEEP,
+        Species.STONE_SHEEP -> SheepProfile(countBeamDiff = false)
         Species.MOUNTAIN_GOAT,
         Species.MUSK_OX,
-        Species.BISON -> SheepProfile()
+        Species.BISON -> SheepProfile(countBeamDiff = true)
 
         Species.PRONGHORN -> PronghornProfile()
     }
@@ -818,7 +862,10 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
 
         // Spinner changes (if exists)
         fractionField?.let {
-            loadEighths(it)
+            when(type){
+                is MeasurementType.Loc -> loadLocFractions(it)
+                else -> loadEighths(it)
+            }
             it.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
@@ -915,6 +962,13 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
                 y += height
             }
 
+            fun header(text: String, height: Int = LINE_HEIGHT){
+                ensureSpace(height)
+                paint.textSize = 18f
+                paint.isFakeBoldText = true
+                text(text, height)
+            }
+
             fun row(label: String, left: String, right: String, diff: String) {
                 ensureSpace(LINE_HEIGHT)
                 canvas.drawText(label, 40f, y.toFloat(), paint)
@@ -942,7 +996,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
                 ensureSpace(scaled.height + LINE_HEIGHT)
                 val start = (PAGE_WIDTH - scaled.width)/2
                 val rect = Rect(start, y, start + scaled.width, y + scaled.height)
-                canvas.drawBitmap(bitmap, null, rect, null)
+                canvas.drawBitmap(scaled, null, rect, null)
                 y += scaled.height + LINE_HEIGHT
             }
 
@@ -955,94 +1009,190 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         val paint = Paint()
         val writer = PdfWriter(pdf, paint)
 
-        val score = currentScore
+        val all = measurementStore.getAll()
+        val sections = currentProfile.getVisibleSections()
 
         paint.textSize = 24f
         paint.isFakeBoldText = true
-        writer.text("Whitetail Buck Score Sheet", 28)
+        writer.text("${currentSpecies.displayName} Score Sheet", 28)
 
         paint.textSize = 14f
         paint.isFakeBoldText = false
 
         writer.text("Name: ${animalName.text}", 28)
-        writer.text("Type: ${buckType.name}", 28)
 
-        paint.textSize = 18f
-        paint.isFakeBoldText = true
-        writer.text("Spreads", 10)
+        // TYPE
+        if (sections.contains(Section.TYPE))
+            writer.text("Type: ${buckType.name}", 28)
 
-        paint.textSize = 14f
-        paint.isFakeBoldText = false
-        writer.line()
+        if(sections.contains(Section.POINT_COUNT))
+        {
+            writer.header("Number of Points", 10)
+            paint.textSize = 14f
+            paint.isFakeBoldText = false
+            writer.line()
 
-        val tipSpreadInches = tipSpreadInches.text.toString().toIntOrNull() ?: 0
-        val tipSpreadFractionValue = tipSpreadFractions.selectedItemPosition / 8.0
-        writer.text("Tip to Tip Spread: ${doubleToBC(tipSpreadInches + tipSpreadFractionValue)}",28)
+            if(all.any{it.type == MeasurementType.PointCount})
+                writer.text("Normal Points:\t ${measurementStore.get(MeasurementType.PointCount)}",28)
+            if(all.any{it.type == MeasurementType.BrowPointCount})
+                writer.text("Brow Points:\t ${measurementStore.get(MeasurementType.BrowPointCount)}",28)
+            }
 
-        val greatestSpreadInches = greatestSpreadInches.text.toString().toIntOrNull() ?: 0
-        val greatestSpreadFractionValue = greatestSpreadFractions.selectedItemPosition / 8.0
-        writer.text("Greatest Spread: ${doubleToBC(greatestSpreadInches + greatestSpreadFractionValue)}",28)
+        // SPREADS
+        // Potential issues:
+        // Doesn't account for spread display order
+        if(sections.contains(Section.SPREADS))
+        {
+            writer.header("Spreads", 10)
+            paint.textSize = 14f
+            paint.isFakeBoldText = false
+            writer.line()
 
-        writer.text("Inner Spread: ${doubleToBC(measurementStore.get(MeasurementType.InnerSpread))}",28)
-
-        paint.textSize = 18f
-        paint.isFakeBoldText = true
-        writer.text("Lengths", 10)
-
-        paint.textSize = 14f
-        paint.isFakeBoldText = false
-        writer.line()
-
-        paint.isFakeBoldText = true
-        writer.row("Measurement","Left","Right","Difference")
-        paint.isFakeBoldText = false
-
-
-        val beams = measurementStore.getPaired(MeasurementType.MainBeam)
-        writer.row(beams.type.displayMeasurementName(), doubleToBC(beams.left), doubleToBC(beams.right), doubleToBC(beams.difference()))
-
-        val validPoints = measurementStore.getPairedList{it is MeasurementType.G}.filter{it.sum() > 0}
-        for (p in validPoints) {
-            writer.row(
-                p.type.displayMeasurementName(),
-                doubleToBC(p.left),
-                doubleToBC(p.right),
-                doubleToBC(p.difference())
-            )
-        }
-        writer.spacing(10)
-
-        paint.textSize = 18f
-        paint.isFakeBoldText = true
-        writer.text("Circumferences",10)
-        paint.textSize = 14f
-        paint.isFakeBoldText = false
-        writer.line()
-
-        paint.isFakeBoldText = true
-        writer.row("Measurement","Left","Right","Difference")
-        paint.isFakeBoldText = false
-
-        val circumferences = measurementStore.getPairedList { it is MeasurementType.Circumference }
-        for (p in circumferences) {
-            writer.row(
-                p.type.displayMeasurementName(),
-                doubleToBC(p.left),
-                doubleToBC(p.right),
-                doubleToBC(p.difference())
-            )
+            if(all.any{it.type == MeasurementType.TipSpread})
+                writer.text("Tip to Tip Spread:\t ${measurementStore.get(MeasurementType.TipSpread)}",28)
+            if(all.any{it.type == MeasurementType.GreatestSpread})
+                writer.text("Greatest Spread:\t ${measurementStore.get(MeasurementType.GreatestSpread)}",28)
+            if(all.any{it.type == MeasurementType.InnerSpread})
+                writer.text("Inner Spread:\t ${measurementStore.get(MeasurementType.InnerSpread)}",28)
         }
 
-        writer.line()
 
-        val abnormalPoints = measurementStore.getAll().filter { it.type is MeasurementType.AbnormalPoint }
-        writer.row("Totals", "${leftSumText.text}", "${rightSumText.text}", "${differenceText.text}")
-        writer.row("Abnormal Totals", "${doubleToBC(abnormalPoints.filter{ it.side == Side.LEFT }.sumOf{it.value})}", "${doubleToBC(abnormalPoints.filter{ it.side == Side.RIGHT }.sumOf{it.value})}", "")
-        writer.line()
+        // LENGTHS
+        // Potential issues:
+        // Labels for G points might be different (i.e. caribou) - needs RowConfigs
+        // Doesn't account for sheep not having difference in main beams
+        if(sections.contains(Section.LENGTHS))
+        {
+            writer.header("Lengths", 10)
+            paint.textSize = 14f
+            paint.isFakeBoldText = false
+            writer.line()
 
+            paint.isFakeBoldText = true
+            val mainBeams = measurementStore.getPaired(MeasurementType.MainBeam)
+
+            val sheep = listOf(Species.STONE_SHEEP, Species.DESERT_SHEEP, Species.BIGHORN_SHEEP, Species.DALL_SHEEP)
+            if(currentSpecies in sheep){
+                writer.row("Measurement","Left","Right","")
+                paint.isFakeBoldText = false
+                writer.row("Length of Horns", doubleToBC(mainBeams.left),
+                    doubleToBC(mainBeams.right), "")
+            }
+            else{
+                writer.row("Measurement","Left","Right","Difference")
+                paint.isFakeBoldText = false
+                writer.row(mainBeams.type.displayMeasurementName(), doubleToBC(mainBeams.left),
+                    doubleToBC(mainBeams.right), doubleToBC(mainBeams.difference()))
+
+                if(all.any{it.type == MeasurementType.ProngLength}){
+                    val prongLengths = measurementStore.getPaired(MeasurementType.ProngLength)
+                    writer.row(prongLengths.type.displayMeasurementName(), doubleToBC(prongLengths.left),
+                        doubleToBC(prongLengths.right), doubleToBC(prongLengths.difference()))
+                }
+
+                val gPoints = measurementStore.getPairedList{it is MeasurementType.G}
+                val section = currentProfile.getSectionConfigs().find{it.type == Section.LENGTHS}
+                val rows  = section?.rows
+
+                for (p in gPoints) {
+                    var displayName = rows?.find{it.type == p.type}?.label
+                    if(displayName == null || displayName == "")
+                        displayName = p.type.displayMeasurementName()
+                    writer.row(
+                        displayName,
+                        doubleToBC(p.left),
+                        doubleToBC(p.right),
+                        doubleToBC(p.difference())
+                    )
+                }
+            }
+
+            writer.spacing(10)
+        }
+
+        //WIDTHS
+        if(sections.contains(Section.WIDTHS))
+        {
+            writer.header("Widths", 10)
+            paint.textSize = 14f
+            paint.isFakeBoldText = false
+            writer.line()
+
+            paint.isFakeBoldText = true
+            writer.row("Measurement","Left","Right","Difference")
+            paint.isFakeBoldText = false
+
+            if(all.any{it.type == MeasurementType.BrowWidth})
+                writer.text("Brow Palm:\t ${measurementStore.get(MeasurementType.BrowWidth)}",28)
+            if(all.any{it.type == MeasurementType.Width})
+                writer.text("Top Palm:\t ${measurementStore.get(MeasurementType.Width)}",28)
+
+        }
+
+        //CIRCUMFERENCES
+        if(sections.contains(Section.CIRCUMFERENCES))
+        {
+            writer.header("Circumferences", 10)
+            paint.textSize = 14f
+            paint.isFakeBoldText = false
+            writer.line()
+
+            paint.isFakeBoldText = true
+            writer.row("Measurement","Left","Right","Difference")
+            paint.isFakeBoldText = false
+
+            val section = currentProfile.getSectionConfigs().find{it.type == Section.CIRCUMFERENCES}
+            val rows  = section?.rows
+
+            val circumferences = measurementStore.getPairedList { it is MeasurementType.Circumference }
+
+            for (c in circumferences) {
+                val type = c.type as MeasurementType.Circumference
+                val index = type.index
+                var hName = rows?.find{it.type == MeasurementType.Circumference(index)}?.label
+                if(hName == null || hName == "")
+                    hName = MeasurementType.Circumference(index).displayMeasurementName()
+
+                writer.row(
+                    hName,
+                    doubleToBC(c.left),
+                    doubleToBC(c.right),
+                    doubleToBC(c.difference())
+                )
+
+                // Handle matching location
+                val locType = MeasurementType.Loc(index)
+                if (all.any{it.type == locType}) {
+                    writer.row(
+                        "Location of Measurement",
+                        doubleToBC(measurementStore.get(locType)),
+                        "",
+                        ""
+                    )
+                }
+            }
+
+            writer.spacing(10)
+        }
+
+        writer.row("Totals", "${currentScore.leftSum}", "${currentScore.rightSum}", "${currentScore.differenceTotal}")
+
+        if(sections.contains(Section.CROWN_POINTS)){
+            val crownPoints = measurementStore.getAll().filter { it.type is MeasurementType.CrownPoint }
+            writer.row("Crown Totals", "${doubleToBC(crownPoints.filter{ it.side == Side.LEFT }.sumOf{it.value})}", "${doubleToBC(crownPoints.filter{ it.side == Side.RIGHT }.sumOf{it.value})}", "")
+
+        }
+
+        if(sections.contains(Section.ABNORMALS)){
+            val abnormalPoints = measurementStore.getAll().filter { it.type is MeasurementType.AbnormalPoint }
+            writer.row("Abnormal Totals", "${doubleToBC(abnormalPoints.filter{ it.side == Side.LEFT }.sumOf{it.value})}", "${doubleToBC(abnormalPoints.filter{ it.side == Side.RIGHT }.sumOf{it.value})}", "")
+
+        }
+
+        writer.line()
         paint.isFakeBoldText = true
-        writer.row("Gross Score", "", "", "${grossScoreText.text}")
-        writer.row("Net Score", "", "", "${finalScoreText.text}")
+        writer.row("Gross Score", "", "", "${currentScore.gross}")
+        writer.row("Net Score", "", "", "${currentScore.finalScore}")
 
         buckPic?.let { writer.image(it) }
 
@@ -1089,6 +1239,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             MeasurementType.ProngLength -> "Prong Length"
             MeasurementType.BrowPointCount -> "Number of Brow Points"
             is MeasurementType.CrownPoint -> "Crown Point ${index}"
+            is MeasurementType.Loc -> "Location of Measurement ${index}"
         }
     }
 
@@ -1097,6 +1248,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     // ===============================
     private fun clearScoreDisplay() {
         grossScoreText.text = "0"
+        crownScoreText.text = "0"
         abnormalText.text = "0"
         differenceText.text = "0"
         spreadCreditText.text = "0"
@@ -1112,6 +1264,8 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         clearSection(R.id.lengthsSection)
         clearSection(R.id.spreadsSection)
         clearSection(R.id.circumferenceSection)
+        clearSection(R.id.crownPointsSection)
+        clearSection(R.id.widthsSection)
         buckPic = null
         buckImageView.visibility = View.GONE
         root.findViewById<TextView>(R.id.addPhotoText).visibility = View.VISIBLE
@@ -1177,16 +1331,20 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     // ===============================
 
     private fun loadEighths(spinner: Spinner) {
-//        spinner.adapter = ArrayAdapter(
-//            requireContext(),
-//            //android.R.layout.simple_spinner_dropdown_item,
-//            R.layout.spinner_item_fraction,
-//            eighthFractions
-//        )
         val adapter = ArrayAdapter(
             requireContext(),
             R.layout.spinner_item_fraction,
             eighthFractions
+        )
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_fraction)
+        spinner.adapter = adapter
+    }
+
+    private fun loadLocFractions(spinner: Spinner) {
+        val adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.spinner_item_fraction,
+            locationFractions
         )
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_fraction)
         spinner.adapter = adapter

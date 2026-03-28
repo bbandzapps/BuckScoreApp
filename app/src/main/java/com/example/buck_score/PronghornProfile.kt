@@ -74,9 +74,19 @@ class PronghornProfile : ScoringProfile {
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
+                        label = "Location of Measurement",
+                        type = ScoreFragment.MeasurementType.Loc(1),
+                        layoutType = ScoreFragment.RowLayoutType.LOC
+                    ),
+                    RowConfig(
                         label = "1st Quarter (25% length of longer horn)",
                         type = ScoreFragment.MeasurementType.Circumference(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                    ),
+                    RowConfig(
+                        label = "Location of Measurement",
+                        type = ScoreFragment.MeasurementType.Loc(2),
+                        layoutType = ScoreFragment.RowLayoutType.LOC
                     ),
                     RowConfig(
                         label = "2nd Quarter (50% length of longer horn)",
@@ -84,9 +94,19 @@ class PronghornProfile : ScoringProfile {
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
+                        label = "Location of Measurement",
+                        type = ScoreFragment.MeasurementType.Loc(3),
+                        layoutType = ScoreFragment.RowLayoutType.LOC
+                    ),
+                    RowConfig(
                         label = "Third Quarter (75% length of longer horn)",
                         type = ScoreFragment.MeasurementType.Circumference(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                    ),
+                    RowConfig(
+                        label = "Location of Measurement",
+                        type = ScoreFragment.MeasurementType.Loc(4),
+                        layoutType = ScoreFragment.RowLayoutType.LOC
                     )
                 ),
                 maxDynamicRows = 0

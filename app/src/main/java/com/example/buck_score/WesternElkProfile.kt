@@ -30,7 +30,7 @@ class WesternElkProfile : ScoringProfile {
             ScoreFragment.SectionConfig(
                 type = ScoreFragment.Section.POINT_COUNT,
                 title = "Points",
-                note = "Number of points that are at least 1 inch long",
+                note = "Number of normal points that are at least 1 inch long",
                 subNote = null,
                 rows = listOf(
                     RowConfig(

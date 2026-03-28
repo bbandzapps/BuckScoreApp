@@ -8,7 +8,9 @@ import com.example.buck_score.ScoreFragment.ScoreBreakdown
 import com.google.android.material.color.utilities.Score
 import kotlin.math.max
 
-class SheepProfile : ScoringProfile {
+class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
+
+    val countBeamDiff = countBeamDiff
 
     override fun getVisibleSections() = listOf(
         ScoreFragment.Section.LENGTHS,
@@ -47,7 +49,7 @@ class SheepProfile : ScoringProfile {
                 type = ScoreFragment.Section.LENGTHS,
                 title = "Lengths",
                 note = "Entire length of each horn",
-                subNote = null,
+                subNote = if (!countBeamDiff) "Note: Sheep species do not account for difference between the horns" else null,
                 rows = listOf(
                     RowConfig(
                         label = "",
@@ -69,9 +71,19 @@ class SheepProfile : ScoringProfile {
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
+                        label = "Location of Measurement",
+                        type = ScoreFragment.MeasurementType.Loc(1),
+                        layoutType = ScoreFragment.RowLayoutType.LOC
+                    ),
+                    RowConfig(
                         label = "1st Quarter (25% length of longer horn)",
                         type = ScoreFragment.MeasurementType.Circumference(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                    ),
+                    RowConfig(
+                        label = "Location of Measurement",
+                        type = ScoreFragment.MeasurementType.Loc(1),
+                        layoutType = ScoreFragment.RowLayoutType.LOC
                     ),
                     RowConfig(
                         label = "2nd Quarter (50% length of longer horn)",
@@ -79,9 +91,19 @@ class SheepProfile : ScoringProfile {
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
+                        label = "Location of Measurement",
+                        type = ScoreFragment.MeasurementType.Loc(1),
+                        layoutType = ScoreFragment.RowLayoutType.LOC
+                    ),
+                    RowConfig(
                         label = "Third Quarter (75% length of longer horn)",
                         type = ScoreFragment.MeasurementType.Circumference(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                    ),
+                    RowConfig(
+                        label = "Location of Measurement",
+                        type = ScoreFragment.MeasurementType.Loc(1),
+                        layoutType = ScoreFragment.RowLayoutType.LOC
                     )
                 ),
                 maxDynamicRows = 0
@@ -105,8 +127,10 @@ class SheepProfile : ScoringProfile {
 
         val mainBeams = store.getPaired(MeasurementType.MainBeam)
 
-        val total_difference = getTotalDifference(circumferences) + mainBeams.difference()
+        var total_difference = getTotalDifference(circumferences)
 
+        if(countBeamDiff)
+            total_difference += mainBeams.difference()
 
         val leftSum = leftSum(circumferences) + mainBeams.left
         val rightSum = rightSum(circumferences) + mainBeams.right
