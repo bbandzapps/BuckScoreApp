@@ -11,7 +11,7 @@
 
     <fragment
         android:id="@+id/savedFragment"
-        android:name="com.example.buck_score.ScoreFragment"
+        android:name="com.example.buck_score.SavedFragment"
         android:label="Saved" />
 
     <fragment
