@@ -51,7 +51,8 @@ class MooseProfile : ScoringProfile {
                     RowConfig(
                         label = "Greatest Spread",
                         type = ScoreFragment.MeasurementType.GreatestSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0

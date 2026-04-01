@@ -36,9 +36,15 @@ import androidx.appcompat.app.AlertDialog
 //import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.text.font.Typeface
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.OutputStream
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 // ================
 // TABLE OF CONTENTS:
@@ -225,13 +231,29 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             return PairedMeasurement(type, left, right)
         }
 
-        fun getPairedList(filter: (MeasurementType) -> Boolean): List<PairedMeasurement> {
-            return values
-                .map { it.type }
-                .filter(filter)
-                .distinct()
+//        fun getPairedList(filter: (MeasurementType) -> Boolean): List<PairedMeasurement> {
+//            return values
+//                .map { it.type }
+//                .filter(filter)
+//                .distinct()
+//                .map { getPaired(it) }
+//        }
+        fun getPairedList(
+            predicate: (MeasurementType) -> Boolean
+        ): List<PairedMeasurement> =
+            values
+                .mapNotNull { it.type.takeIf(predicate) }
+                .distinctBy { it } // still fine because types are unique per index
+                .sortedBy {
+                    when (it) {
+                        is MeasurementType.Circumference -> it.index
+                        is MeasurementType.G -> it.index
+                        is MeasurementType.AbnormalPoint -> it.index
+                        is MeasurementType.CrownPoint -> it.index
+                        else -> 0
+                    }
+                }
                 .map { getPaired(it) }
-        }
 
         fun getAll(): List<MeasurementValue> = values
         fun clear(){
@@ -252,7 +274,8 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     data class RowConfig(
         val label: String,
         val type: MeasurementType,
-        val layoutType: RowLayoutType
+        val layoutType: RowLayoutType,
+        val showDifference: Boolean = true
     )
 
     data class ScoreDisplayConfig(
@@ -398,11 +421,22 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             pickImageLauncher.launch("image/*")
         }
 
-        downloadBtn.setOnClickListener{
-            val rootView = root.findViewById<View>(android.R.id.content)
-            Snackbar.make(rootView, "Downloading PDF…", Snackbar.LENGTH_SHORT).show()
-            generateScorePdf()
-            Snackbar.make(rootView, "Downloaded successfully", Snackbar.LENGTH_SHORT).show()
+//        downloadBtn.setOnClickListener{
+//            val rootView = root.findViewById<View>(android.R.id.content)
+//            Snackbar.make(rootView, "Downloading PDF…", Snackbar.LENGTH_SHORT).show()
+//            generateScorePdf()
+//            Snackbar.make(rootView, "Downloaded successfully", Snackbar.LENGTH_SHORT).show()
+//        }
+        downloadBtn.setOnClickListener {
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), "Generating PDF…", Snackbar.LENGTH_SHORT).show()
+
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    generateScorePdf()
+                }
+
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "Downloaded successfully", Snackbar.LENGTH_SHORT).show()
+            }
         }
 
         saveBtn.setOnClickListener{
@@ -732,7 +766,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
 
         registerMeasurementViews(
             type,
-            Side.LEFT,
+            null,//Side.LEFT,
             row.findViewById<EditText>(R.id.inches),
             row.findViewById<Spinner>(R.id.fraction)
         )
@@ -906,16 +940,16 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             spreadCreditNote.visibility = View.GONE
         }
 
-        spreadCreditText.text = "${doubleToBC(currentScore.spreadCredit)}"
-        leftSumText.text = "${doubleToBC(currentScore.leftSum)}"
-        rightSumText.text = "${doubleToBC(currentScore.rightSum)}"
-        subtotalText.text = "${doubleToBC(currentScore.subtotal)}"
-        crownScoreText.text = "${doubleToBC(currentScore.crownPointScore)}"
-        differenceText.text = "${doubleToBC(currentScore.differenceTotal)}"
-        abnormalText.text = "${doubleToBC(currentScore.abnormalSum)}"
-        grossScoreText.text = "${doubleToBC(currentScore.gross)}"
+        spreadCreditText.text = doubleToBC(currentScore.spreadCredit)
+        leftSumText.text = doubleToBC(currentScore.leftSum)
+        rightSumText.text = doubleToBC(currentScore.rightSum)
+        subtotalText.text = doubleToBC(currentScore.subtotal)
+        crownScoreText.text = doubleToBC(currentScore.crownPointScore)
+        differenceText.text = doubleToBC(currentScore.differenceTotal)
+        abnormalText.text = doubleToBC(currentScore.abnormalSum)
+        grossScoreText.text = doubleToBC(currentScore.gross)
 
-        finalScoreText.text = "${doubleToBC(currentScore.finalScore)}"
+        finalScoreText.text = doubleToBC(currentScore.finalScore)
 
     }
 
@@ -969,12 +1003,13 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
                 text(text, height)
             }
 
-            fun row(label: String, left: String, right: String, diff: String) {
+            fun row(label: String, left: String, right: String, diff: String, loc: String = "") {
                 ensureSpace(LINE_HEIGHT)
                 canvas.drawText(label, 40f, y.toFloat(), paint)
-                canvas.drawText(left, 200f, y.toFloat(), paint)
+                canvas.drawText(left, 220f, y.toFloat(), paint)
                 canvas.drawText(right, 300f, y.toFloat(), paint)
-                canvas.drawText(diff, 420f, y.toFloat(), paint)
+                canvas.drawText(diff, 380f, y.toFloat(), paint)
+                canvas.drawText(loc, 460f, y.toFloat(), paint)
                 y += LINE_HEIGHT
             }
 
@@ -1008,6 +1043,8 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         val pdf = PdfDocument()
         val paint = Paint()
         val writer = PdfWriter(pdf, paint)
+        val date = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         val all = measurementStore.getAll()
         val sections = currentProfile.getVisibleSections()
@@ -1025,6 +1062,10 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         if (sections.contains(Section.TYPE))
             writer.text("Type: ${buckType.name}", 28)
 
+        writer.text("Date: ${date.format(formatter)}")
+        writer.spacing(10)
+
+        // Point Count
         if(sections.contains(Section.POINT_COUNT))
         {
             writer.header("Number of Points", 10)
@@ -1032,11 +1073,34 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             paint.isFakeBoldText = false
             writer.line()
 
-            if(all.any{it.type == MeasurementType.PointCount})
-                writer.text("Normal Points:\t ${measurementStore.get(MeasurementType.PointCount)}",28)
-            if(all.any{it.type == MeasurementType.BrowPointCount})
-                writer.text("Brow Points:\t ${measurementStore.get(MeasurementType.BrowPointCount)}",28)
+            val section = currentProfile.getSectionConfigs().find{it.type == Section.POINT_COUNT}
+            val rows  = section?.rows
+
+            if (rows != null) {
+                paint.isFakeBoldText = true
+                if (rows.find { it.showDifference == true } != null)
+                    writer.row("Measurement", "Left", "Right", "Difference")
+                else
+                    writer.row("Measurement", "Left", "Right", "")
+                paint.isFakeBoldText = false
+
+                for (row in rows) {
+                    var diff = ""
+                    if (row.showDifference)
+                        diff = doubleToBC(measurementStore.getPaired(row.type).difference())
+
+                    var label = row.label
+                    if(row.type == MeasurementType.PointCount && row.label == "")
+                        label = "Normal Points"
+
+                    writer.row(
+                        label, doubleToBC(measurementStore.get(row.type, Side.LEFT)),
+                        doubleToBC(measurementStore.get(row.type, Side.RIGHT)), diff)
+
+                }
             }
+            writer.spacing(10)
+        }
 
         // SPREADS
         // Potential issues:
@@ -1048,12 +1112,15 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             paint.isFakeBoldText = false
             writer.line()
 
-            if(all.any{it.type == MeasurementType.TipSpread})
-                writer.text("Tip to Tip Spread:\t ${measurementStore.get(MeasurementType.TipSpread)}",28)
-            if(all.any{it.type == MeasurementType.GreatestSpread})
-                writer.text("Greatest Spread:\t ${measurementStore.get(MeasurementType.GreatestSpread)}",28)
-            if(all.any{it.type == MeasurementType.InnerSpread})
-                writer.text("Inner Spread:\t ${measurementStore.get(MeasurementType.InnerSpread)}",28)
+            val section = currentProfile.getSectionConfigs().find{it.type == Section.SPREADS}
+            val rows  = section?.rows
+
+            if (rows != null) {
+                for(row in rows){
+                    writer.text(row.label + ":\t ${doubleToBC(measurementStore.get(row.type))}")
+                }
+            }
+            writer.spacing(10)
         }
 
 
@@ -1068,43 +1135,53 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             paint.isFakeBoldText = false
             writer.line()
 
+            val section = currentProfile.getSectionConfigs().find{it.type == Section.LENGTHS}
+            val rows  = section?.rows
+
             paint.isFakeBoldText = true
+
             val mainBeams = measurementStore.getPaired(MeasurementType.MainBeam)
 
-            val sheep = listOf(Species.STONE_SHEEP, Species.DESERT_SHEEP, Species.BIGHORN_SHEEP, Species.DALL_SHEEP)
-            if(currentSpecies in sheep){
-                writer.row("Measurement","Left","Right","")
+            if (rows != null) {
+                paint.isFakeBoldText = true
+                if (rows.find { it.showDifference == true } != null)
+                    writer.row("Measurement", "Left", "Right", "Difference")
+                else
+                    writer.row("Measurement", "Left", "Right", "")
                 paint.isFakeBoldText = false
-                writer.row("Length of Horns", doubleToBC(mainBeams.left),
-                    doubleToBC(mainBeams.right), "")
-            }
-            else{
-                writer.row("Measurement","Left","Right","Difference")
-                paint.isFakeBoldText = false
-                writer.row(mainBeams.type.displayMeasurementName(), doubleToBC(mainBeams.left),
-                    doubleToBC(mainBeams.right), doubleToBC(mainBeams.difference()))
 
-                if(all.any{it.type == MeasurementType.ProngLength}){
-                    val prongLengths = measurementStore.getPaired(MeasurementType.ProngLength)
-                    writer.row(prongLengths.type.displayMeasurementName(), doubleToBC(prongLengths.left),
-                        doubleToBC(prongLengths.right), doubleToBC(prongLengths.difference()))
-                }
+                for (row in rows) {
 
-                val gPoints = measurementStore.getPairedList{it is MeasurementType.G}
-                val section = currentProfile.getSectionConfigs().find{it.type == Section.LENGTHS}
-                val rows  = section?.rows
+                    var diff = ""
+                    if (row.showDifference)
+                        diff = doubleToBC(measurementStore.getPaired(row.type).difference())
 
-                for (p in gPoints) {
-                    var displayName = rows?.find{it.type == p.type}?.label
-                    if(displayName == null || displayName == "")
-                        displayName = p.type.displayMeasurementName()
+                    var label = row.label
+                    if(row.type == MeasurementType.MainBeam && row.label == "")
+                        label = "Length of horns"
+
                     writer.row(
-                        displayName,
-                        doubleToBC(p.left),
-                        doubleToBC(p.right),
-                        doubleToBC(p.difference())
-                    )
+                        label, doubleToBC(measurementStore.get(row.type, Side.LEFT)),
+                        doubleToBC(measurementStore.get(row.type, Side.RIGHT)), diff)
+
                 }
+            }
+
+            // For dynamically added points
+            val gPoints = measurementStore.getPairedList{it is MeasurementType.G}.filter{it.left + it.right > 0.0}
+            for (p in gPoints) {
+                if (rows?.find{it.type == p.type} != null){
+                    continue
+                }
+                var displayName = rows?.find{it.type == p.type}?.label
+                if(displayName == null || displayName == "")
+                    displayName = p.type.displayMeasurementName()
+                writer.row(
+                    displayName,
+                    doubleToBC(p.left),
+                    doubleToBC(p.right),
+                    doubleToBC(p.difference())
+                )
             }
 
             writer.spacing(10)
@@ -1122,11 +1199,20 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             writer.row("Measurement","Left","Right","Difference")
             paint.isFakeBoldText = false
 
-            if(all.any{it.type == MeasurementType.BrowWidth})
-                writer.text("Brow Palm:\t ${measurementStore.get(MeasurementType.BrowWidth)}",28)
-            if(all.any{it.type == MeasurementType.Width})
-                writer.text("Top Palm:\t ${measurementStore.get(MeasurementType.Width)}",28)
+            val section = currentProfile.getSectionConfigs().find{it.type == Section.WIDTHS}
+            val rows  = section?.rows
 
+
+            if (rows != null) {
+                for(row in rows){
+                    var diff = ""
+                    if(row.showDifference)
+                        diff = doubleToBC(measurementStore.getPaired(row.type).difference())
+                    writer.row(row.label, doubleToBC(measurementStore.get(row.type, Side.LEFT)),
+                        doubleToBC(measurementStore.get(row.type, Side.RIGHT)), diff)
+                }
+            }
+            writer.spacing(10)
         }
 
         //CIRCUMFERENCES
@@ -1137,8 +1223,13 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             paint.isFakeBoldText = false
             writer.line()
 
+            var locLabel = ""
+            if(all.find{it.type is MeasurementType.Loc} != null){
+                locLabel = "Location"
+            }
+
             paint.isFakeBoldText = true
-            writer.row("Measurement","Left","Right","Difference")
+            writer.row("Measurement","Left","Right","Difference", locLabel)
             paint.isFakeBoldText = false
 
             val section = currentProfile.getSectionConfigs().find{it.type == Section.CIRCUMFERENCES}
@@ -1149,50 +1240,45 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             for (c in circumferences) {
                 val type = c.type as MeasurementType.Circumference
                 val index = type.index
-                var hName = rows?.find{it.type == MeasurementType.Circumference(index)}?.label
-                if(hName == null || hName == "")
-                    hName = MeasurementType.Circumference(index).displayMeasurementName()
+
+                val locType = MeasurementType.Loc(index)
+                var locValue = ""
+                if (all.any{it.type == locType}) {
+                   locValue = doubleToBC(measurementStore.get(locType))
+                }
+
 
                 writer.row(
-                    hName,
+                    c.type.displayMeasurementName(),
                     doubleToBC(c.left),
                     doubleToBC(c.right),
-                    doubleToBC(c.difference())
+                    doubleToBC(c.difference()),
+                    locValue
                 )
 
-                // Handle matching location
-                val locType = MeasurementType.Loc(index)
-                if (all.any{it.type == locType}) {
-                    writer.row(
-                        "Location of Measurement",
-                        doubleToBC(measurementStore.get(locType)),
-                        "",
-                        ""
-                    )
-                }
             }
 
             writer.spacing(10)
         }
 
-        writer.row("Totals", "${currentScore.leftSum}", "${currentScore.rightSum}", "${currentScore.differenceTotal}")
+        writer.row("Totals", doubleToBC(currentScore.leftSum), doubleToBC(currentScore.rightSum), doubleToBC(currentScore.differenceTotal))
 
         if(sections.contains(Section.CROWN_POINTS)){
             val crownPoints = measurementStore.getAll().filter { it.type is MeasurementType.CrownPoint }
-            writer.row("Crown Totals", "${doubleToBC(crownPoints.filter{ it.side == Side.LEFT }.sumOf{it.value})}", "${doubleToBC(crownPoints.filter{ it.side == Side.RIGHT }.sumOf{it.value})}", "")
+            writer.row("Crown Totals", doubleToBC(crownPoints.filter{ it.side == Side.LEFT }.sumOf{it.value}), doubleToBC(crownPoints.filter{ it.side == Side.RIGHT }.sumOf{it.value}), "")
 
         }
 
         if(sections.contains(Section.ABNORMALS)){
             val abnormalPoints = measurementStore.getAll().filter { it.type is MeasurementType.AbnormalPoint }
-            writer.row("Abnormal Totals", "${doubleToBC(abnormalPoints.filter{ it.side == Side.LEFT }.sumOf{it.value})}", "${doubleToBC(abnormalPoints.filter{ it.side == Side.RIGHT }.sumOf{it.value})}", "")
+            writer.row("Abnormal Totals", doubleToBC(abnormalPoints.filter{ it.side == Side.LEFT }.sumOf{it.value}), doubleToBC(abnormalPoints.filter{ it.side == Side.RIGHT }.sumOf{it.value}), "")
 
         }
 
         writer.line()
         paint.isFakeBoldText = true
-        writer.row("Gross Score", "", "", "${currentScore.gross}")
-        writer.row("Net Score", "", "", "${currentScore.finalScore}")
+        writer.row("Gross Score", "", "", doubleToBC(currentScore.gross))
+        writer.row("Net Score", "", "", doubleToBC(currentScore.finalScore))
 
         buckPic?.let { writer.image(it) }
 
@@ -1202,7 +1288,11 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
 
 
     private fun savePdfToDownloads(pdf: PdfDocument) {
-        val filename = "Buck_Score_${System.currentTimeMillis()}.pdf"
+        val date = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm-ss")
+        val dateStr = date.format(formatter)
+        val safeName = animalName.text.toString().replace(Regex("[^a-zA-Z0-9_]"), "_")
+        val filename = "${safeName}_${dateStr}"
 
         val values = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
@@ -1220,13 +1310,12 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
                 pdf.writeTo(output)
             }
         }
-
         pdf.close()
     }
 
     fun MeasurementType.displayMeasurementName(): String {
         return when (this) {
-            is MeasurementType.G -> "G${index}"
+            is MeasurementType.G -> "G${index}: ${ordinalWord(index)} Point"
             is MeasurementType.AbnormalPoint -> "Abnormal ${index}"
             MeasurementType.MainBeam -> "Main Beam"
             is MeasurementType.Circumference -> "Circumference ${index}"

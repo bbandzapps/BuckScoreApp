@@ -36,7 +36,8 @@ class WesternElkProfile : ScoringProfile {
                     RowConfig(
                         label = "",
                         type = ScoreFragment.MeasurementType.PointCount,
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0
@@ -50,17 +51,20 @@ class WesternElkProfile : ScoringProfile {
                     RowConfig(
                         label = "Tip to Tip (Main Beams)",
                         type = ScoreFragment.MeasurementType.TipSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Greatest Spread",
                         type = ScoreFragment.MeasurementType.GreatestSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Inside Main Beams",
                         type = ScoreFragment.MeasurementType.InnerSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0
@@ -74,27 +78,32 @@ class WesternElkProfile : ScoringProfile {
                     RowConfig(
                         label = "Crown Point 1",
                         type = ScoreFragment.MeasurementType.CrownPoint(1),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Crown Point 2",
                         type = ScoreFragment.MeasurementType.CrownPoint(2),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Crown Point 3",
                         type = ScoreFragment.MeasurementType.CrownPoint(3),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Crown Point 4",
                         type = ScoreFragment.MeasurementType.CrownPoint(4),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Crown Point 5",
                         type = ScoreFragment.MeasurementType.CrownPoint(5),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 10,
@@ -109,12 +118,14 @@ class WesternElkProfile : ScoringProfile {
                     RowConfig(
                         label = "Abnormal Point 1",
                         type = ScoreFragment.MeasurementType.AbnormalPoint(1),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Abnormal Point 2",
                         type = ScoreFragment.MeasurementType.AbnormalPoint(2),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 50,
@@ -155,17 +166,17 @@ class WesternElkProfile : ScoringProfile {
                         label = "G5: Fifth Point",
                         type = ScoreFragment.MeasurementType.G(5),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
-                    ),
-                    RowConfig(
-                        label = "G6: Sixth Point",
-                        type = ScoreFragment.MeasurementType.G(6),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
-                    ),
-                    RowConfig(
-                        label = "G7: Seventh Point",
-                        type = ScoreFragment.MeasurementType.G(7),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
+//                    RowConfig(
+//                        label = "G6: Sixth Point",
+//                        type = ScoreFragment.MeasurementType.G(6),
+//                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+//                    ),
+//                    RowConfig(
+//                        label = "G7: Seventh Point",
+//                        type = ScoreFragment.MeasurementType.G(7),
+//                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+//                    )
                 ),
                 maxDynamicRows = 15,
                 dynamicBaseType = MeasurementType.G(1)

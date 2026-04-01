@@ -33,12 +33,14 @@ class PronghornProfile : ScoringProfile {
                     RowConfig(
                         label = "Tip to Tip Spread",
                         type = ScoreFragment.MeasurementType.TipSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Inner Spread",
                         type = ScoreFragment.MeasurementType.InnerSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                 ),
                 maxDynamicRows = 0
@@ -73,11 +75,12 @@ class PronghornProfile : ScoringProfile {
                         type = ScoreFragment.MeasurementType.Circumference(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
-                    RowConfig(
-                        label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(1),
-                        layoutType = ScoreFragment.RowLayoutType.LOC
-                    ),
+//                    RowConfig(
+//                        label = "Location of Measurement",
+//                        type = ScoreFragment.MeasurementType.Loc(1),
+//                        layoutType = ScoreFragment.RowLayoutType.LOC,
+//                        showDifference = false
+//                    ),
                     RowConfig(
                         label = "1st Quarter (25% length of longer horn)",
                         type = ScoreFragment.MeasurementType.Circumference(2),
@@ -86,7 +89,8 @@ class PronghornProfile : ScoringProfile {
                     RowConfig(
                         label = "Location of Measurement",
                         type = ScoreFragment.MeasurementType.Loc(2),
-                        layoutType = ScoreFragment.RowLayoutType.LOC
+                        layoutType = ScoreFragment.RowLayoutType.LOC,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "2nd Quarter (50% length of longer horn)",
@@ -96,7 +100,8 @@ class PronghornProfile : ScoringProfile {
                     RowConfig(
                         label = "Location of Measurement",
                         type = ScoreFragment.MeasurementType.Loc(3),
-                        layoutType = ScoreFragment.RowLayoutType.LOC
+                        layoutType = ScoreFragment.RowLayoutType.LOC,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Third Quarter (75% length of longer horn)",
@@ -106,7 +111,8 @@ class PronghornProfile : ScoringProfile {
                     RowConfig(
                         label = "Location of Measurement",
                         type = ScoreFragment.MeasurementType.Loc(4),
-                        layoutType = ScoreFragment.RowLayoutType.LOC
+                        layoutType = ScoreFragment.RowLayoutType.LOC,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0

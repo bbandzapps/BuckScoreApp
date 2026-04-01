@@ -34,7 +34,8 @@
             android:textColorHint="@color/black"
             android:textColor="@color/black"
             android:background="@drawable/rounded_textbox"
-            android:inputType="number" />
+            android:inputType="number"
+            android:maxLength="5"/>
 
         <!-- Fraction -->
         <Spinner

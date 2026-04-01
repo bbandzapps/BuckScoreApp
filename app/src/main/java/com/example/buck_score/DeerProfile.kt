@@ -36,7 +36,8 @@ class DeerProfile : ScoringProfile {
                     RowConfig(
                         label = "",
                         type = ScoreFragment.MeasurementType.PointCount,
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0
@@ -50,17 +51,20 @@ class DeerProfile : ScoringProfile {
                     RowConfig(
                         label = "Tip to Tip (Main Beams)",
                         type = ScoreFragment.MeasurementType.TipSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Greatest Spread",
                         type = ScoreFragment.MeasurementType.GreatestSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Inner Spread",
                         type = ScoreFragment.MeasurementType.InnerSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0
@@ -74,12 +78,14 @@ class DeerProfile : ScoringProfile {
                     RowConfig(
                         label = "Abnormal Point 1",
                         type = ScoreFragment.MeasurementType.AbnormalPoint(1),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Abnormal Point 2",
                         type = ScoreFragment.MeasurementType.AbnormalPoint(2),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 50,

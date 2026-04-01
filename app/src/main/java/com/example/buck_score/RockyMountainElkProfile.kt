@@ -50,17 +50,20 @@ class RockyMountainElkProfile : ScoringProfile {
                     RowConfig(
                         label = "Tip to Tip (Main Beams)",
                         type = ScoreFragment.MeasurementType.TipSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Greatest Spread",
                         type = ScoreFragment.MeasurementType.GreatestSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Inside Main Beams",
                         type = ScoreFragment.MeasurementType.InnerSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0
@@ -74,12 +77,14 @@ class RockyMountainElkProfile : ScoringProfile {
                     RowConfig(
                         label = "Abnormal Point 1",
                         type = ScoreFragment.MeasurementType.AbnormalPoint(1),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Abnormal Point 2",
                         type = ScoreFragment.MeasurementType.AbnormalPoint(2),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 50,

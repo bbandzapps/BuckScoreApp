@@ -35,7 +35,8 @@
             android:textColor="@color/black"
             android:background="@drawable/rounded_textbox"
             android:inputType="number"
-            android:hint="" />
+            android:hint=""
+            android:maxLength="5"/>
 
         <!-- Left Fraction -->
         <Spinner

@@ -45,7 +45,8 @@
                 android:textColorHint="@color/black"
                 android:layout_marginBottom="8dp"
                 android:text="New Whitetail Deer"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:maxLength="75"/>
 
             <ImageView
                 android:id="@+id/speciesImage"

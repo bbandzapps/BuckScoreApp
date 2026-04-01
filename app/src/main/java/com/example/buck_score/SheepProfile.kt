@@ -35,12 +35,14 @@ class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
                     RowConfig(
                         label = "Greatest Spread",
                         type = ScoreFragment.MeasurementType.GreatestSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Tip to Tip Spread",
                         type = ScoreFragment.MeasurementType.TipSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0
@@ -54,7 +56,8 @@ class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
                     RowConfig(
                         label = "",
                         type = ScoreFragment.MeasurementType.MainBeam,
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0
@@ -70,11 +73,12 @@ class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
                         type = ScoreFragment.MeasurementType.Circumference(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
-                    RowConfig(
-                        label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(1),
-                        layoutType = ScoreFragment.RowLayoutType.LOC
-                    ),
+//                    RowConfig(
+//                        label = "Location of Measurement",
+//                        type = ScoreFragment.MeasurementType.Loc(1),
+//                        layoutType = ScoreFragment.RowLayoutType.LOC,
+//                        showDifference = false
+//                    ),
                     RowConfig(
                         label = "1st Quarter (25% length of longer horn)",
                         type = ScoreFragment.MeasurementType.Circumference(2),
@@ -82,8 +86,9 @@ class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
                     ),
                     RowConfig(
                         label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(1),
-                        layoutType = ScoreFragment.RowLayoutType.LOC
+                        type = ScoreFragment.MeasurementType.Loc(2),
+                        layoutType = ScoreFragment.RowLayoutType.LOC,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "2nd Quarter (50% length of longer horn)",
@@ -92,8 +97,9 @@ class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
                     ),
                     RowConfig(
                         label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(1),
-                        layoutType = ScoreFragment.RowLayoutType.LOC
+                        type = ScoreFragment.MeasurementType.Loc(3),
+                        layoutType = ScoreFragment.RowLayoutType.LOC,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Third Quarter (75% length of longer horn)",
@@ -102,8 +108,9 @@ class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
                     ),
                     RowConfig(
                         label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(1),
-                        layoutType = ScoreFragment.RowLayoutType.LOC
+                        type = ScoreFragment.MeasurementType.Loc(4),
+                        layoutType = ScoreFragment.RowLayoutType.LOC,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0

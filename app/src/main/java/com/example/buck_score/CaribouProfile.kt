@@ -33,14 +33,15 @@ class CaribouProfile : ScoringProfile {
                 subNote = null,
                 rows = listOf(
                     RowConfig(
-                        label = "Number of points on main antlers",
+                        label = "Points on antlers",
                         type = ScoreFragment.MeasurementType.PointCount,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
                     ),
                     RowConfig(
-                        label = "Number of points on brows",
+                        label = "Points on brows",
                         type = ScoreFragment.MeasurementType.BrowPointCount,
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0
@@ -54,17 +55,20 @@ class CaribouProfile : ScoringProfile {
                     RowConfig(
                         label = "Tip to Tip (Main Beams)",
                         type = ScoreFragment.MeasurementType.TipSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Greatest Spread",
                         type = ScoreFragment.MeasurementType.GreatestSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Inner Spread",
                         type = ScoreFragment.MeasurementType.InnerSpread,
-                        layoutType = ScoreFragment.RowLayoutType.SINGLE
+                        layoutType = ScoreFragment.RowLayoutType.SINGLE,
+                        showDifference = false
                     )
                 ),
                 maxDynamicRows = 0
@@ -78,7 +82,8 @@ class CaribouProfile : ScoringProfile {
                     RowConfig(
                         label = "Brow palm",
                         type = ScoreFragment.MeasurementType.BrowWidth,
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Top Palm",
@@ -102,7 +107,8 @@ class CaribouProfile : ScoringProfile {
                     RowConfig(
                         label = "First Point (Brow Palm)",
                         type = ScoreFragment.MeasurementType.G(1),
-                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
+                        layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
+                        showDifference = false
                     ),
                     RowConfig(
                         label = "Second Point (Bez)",
