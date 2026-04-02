@@ -22,7 +22,7 @@
             android:text="No Scorecard Selected"
             android:textStyle="bold"
             android:textSize="18sp"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -54,6 +54,7 @@
                 android:text="View"
                 android:layout_weight="1"
                 android:layout_width="0dp"
+                android:textColor="@color/black"
                 android:layout_height="wrap_content"/>
 
             <Button
@@ -61,6 +62,7 @@
                 android:text="Edit"
                 android:layout_weight="1"
                 android:layout_width="0dp"
+                android:textColor="@color/black"
                 android:layout_height="wrap_content"/>
 
             <Button
@@ -68,6 +70,7 @@
                 android:text="Delete"
                 android:layout_weight="1"
                 android:layout_width="0dp"
+                android:textColor="@color/black"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
