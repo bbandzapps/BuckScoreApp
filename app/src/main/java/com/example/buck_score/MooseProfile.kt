@@ -1,10 +1,10 @@
 package com.example.buck_score
 
 import android.view.View
-import com.example.buck_score.ScoreFragment.BuckType
-import com.example.buck_score.ScoreFragment.MeasurementType
+import com.example.buck_score.BuckType
+import com.example.buck_score.MeasurementType
 import com.example.buck_score.ScoreFragment.RowConfig
-import com.example.buck_score.ScoreFragment.ScoreBreakdown
+import com.example.buck_score.ScoreBreakdown
 import com.google.android.material.color.utilities.Score
 import kotlin.math.max
 
@@ -36,7 +36,7 @@ class MooseProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Number of normal points",
-                        type = ScoreFragment.MeasurementType.PointCount,
+                        type = MeasurementType.PointCount,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
                     )
                 ),
@@ -50,7 +50,7 @@ class MooseProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Greatest Spread",
-                        type = ScoreFragment.MeasurementType.GreatestSpread,
+                        type = MeasurementType.GreatestSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     )
@@ -65,7 +65,7 @@ class MooseProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Number of abnormal points",
-                        type = ScoreFragment.MeasurementType.AbnormalPoint(1),
+                        type = MeasurementType.AbnormalPoint(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
                     )
                 ),
@@ -79,7 +79,7 @@ class MooseProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Length of palms including brow palm",
-                        type = ScoreFragment.MeasurementType.MainBeam,
+                        type = MeasurementType.MainBeam,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
@@ -93,7 +93,7 @@ class MooseProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Width of palms",
-                        type = ScoreFragment.MeasurementType.Width,
+                        type = MeasurementType.Width,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
@@ -107,7 +107,7 @@ class MooseProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Smallest circumference of main beams",
-                        type = ScoreFragment.MeasurementType.Circumference(1),
+                        type = MeasurementType.Circumference(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
@@ -119,7 +119,7 @@ class MooseProfile : ScoringProfile {
 
 
     override fun calculateScore(
-        store: ScoreFragment.MeasurementStore,
+        store: MeasurementStore,
         buckType: BuckType?
     ): ScoreBreakdown {
 

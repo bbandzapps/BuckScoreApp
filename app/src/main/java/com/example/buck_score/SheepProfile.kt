@@ -1,10 +1,10 @@
 package com.example.buck_score
 
 import android.view.View
-import com.example.buck_score.ScoreFragment.BuckType
-import com.example.buck_score.ScoreFragment.MeasurementType
+import com.example.buck_score.BuckType
+import com.example.buck_score.MeasurementType
 import com.example.buck_score.ScoreFragment.RowConfig
-import com.example.buck_score.ScoreFragment.ScoreBreakdown
+import com.example.buck_score.ScoreBreakdown
 import com.google.android.material.color.utilities.Score
 import kotlin.math.max
 
@@ -34,13 +34,13 @@ class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
                 rows = listOf(
                     RowConfig(
                         label = "Greatest Spread",
-                        type = ScoreFragment.MeasurementType.GreatestSpread,
+                        type = MeasurementType.GreatestSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Tip to Tip Spread",
-                        type = ScoreFragment.MeasurementType.TipSpread,
+                        type = MeasurementType.TipSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     )
@@ -55,7 +55,7 @@ class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
                 rows = listOf(
                     RowConfig(
                         label = "",
-                        type = ScoreFragment.MeasurementType.MainBeam,
+                        type = MeasurementType.MainBeam,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
                         showDifference = false
                     )
@@ -70,45 +70,45 @@ class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
                 rows = listOf(
                     RowConfig(
                         label = "Base",
-                        type = ScoreFragment.MeasurementType.Circumference(1),
+                        type = MeasurementType.Circumference(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
 //                    RowConfig(
 //                        label = "Location of Measurement",
-//                        type = ScoreFragment.MeasurementType.Loc(1),
+//                        type = MeasurementType.Loc(1),
 //                        layoutType = ScoreFragment.RowLayoutType.LOC,
 //                        showDifference = false
 //                    ),
                     RowConfig(
                         label = "1st Quarter (25% length of longer horn)",
-                        type = ScoreFragment.MeasurementType.Circumference(2),
+                        type = MeasurementType.Circumference(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(2),
+                        type = MeasurementType.Loc(2),
                         layoutType = ScoreFragment.RowLayoutType.LOC,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "2nd Quarter (50% length of longer horn)",
-                        type = ScoreFragment.MeasurementType.Circumference(3),
+                        type = MeasurementType.Circumference(3),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(3),
+                        type = MeasurementType.Loc(3),
                         layoutType = ScoreFragment.RowLayoutType.LOC,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Third Quarter (75% length of longer horn)",
-                        type = ScoreFragment.MeasurementType.Circumference(4),
+                        type = MeasurementType.Circumference(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(4),
+                        type = MeasurementType.Loc(4),
                         layoutType = ScoreFragment.RowLayoutType.LOC,
                         showDifference = false
                     )
@@ -121,7 +121,7 @@ class SheepProfile (countBeamDiff : Boolean): ScoringProfile{
 
 
     override fun calculateScore(
-        store: ScoreFragment.MeasurementStore,
+        store: MeasurementStore,
         buckType: BuckType?
     ): ScoreBreakdown {
 

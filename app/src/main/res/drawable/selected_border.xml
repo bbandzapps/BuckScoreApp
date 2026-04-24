@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#1E1E1E"/> <!-- same as your card bg -->
+            <corners android:radius="8dp"/>
+        </shape>
+    </item>
+
+    <!-- Border -->
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="2dp"
+                android:color="#E86100"/> <!-- your orange -->
+            <corners android:radius="8dp"/>
+        </shape>
+    </item>
+
+</layer-list>

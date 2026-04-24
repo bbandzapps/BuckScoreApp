@@ -7,79 +7,174 @@
     android:background="@color/app_background"
     android:padding="12dp">
 
-    <!-- Selected Scorecard Display -->
     <LinearLayout
         android:id="@+id/selectedCardContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/rounded_textbox"
+        android:background="@drawable/selected_border"
         android:padding="12dp"
         android:layout_marginBottom="10dp">
 
-        <TextView
-            android:id="@+id/selectedName"
-            android:text="No Scorecard Selected"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="@color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/selectedDetails"
-            android:text="Species | Type | Score | Date"
-            android:textColor="@color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <!-- Optional Image -->
-        <ImageView
-            android:id="@+id/selectedImage"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:scaleType="centerInside"
-            android:layout_marginTop="8dp"
-            android:visibility="gone"/>
+            android:layout_height="wrap_content">
 
-        <!-- Action Buttons -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            <!-- EMPTY STATE -->
+            <TextView
+                android:id="@+id/emptySelectedText"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:gravity="center"
+                android:text="No scorecard selected"
+                android:textStyle="bold"
+                android:textSize="24dp"
+                android:textColor="@color/text_color"/>
 
-            <Button
-                android:id="@+id/viewBtn"
-                android:text="View"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:textColor="@color/black"
-                android:layout_height="wrap_content"/>
 
-            <Button
-                android:id="@+id/editBtn"
-                android:text="Edit"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:textColor="@color/black"
-                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:id="@+id/selectedContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-            <Button
-                android:id="@+id/deleteBtn"
-                android:text="Delete"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:textColor="@color/black"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+                <!-- TOP: Name -->
+                <TextView
+                    android:id="@+id/selectedName"
+                    android:text="No Scorecard Selected"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="@color/text_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:ellipsize="end"/>
+
+                <!-- TOP: Species / Type -->
+                <TextView
+                    android:id="@+id/selectedDetails"
+                    android:text="Species | Type"
+                    android:textColor="@color/text_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <!-- MIDDLE: Image + Info -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
+
+                    <!-- LEFT: Image container -->
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="4dp">
+
+                        <!-- Actual Image -->
+                        <ImageView
+                            android:id="@+id/selectedImage"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"/>
+
+                        <!-- Fallback text -->
+                        <TextView
+                            android:id="@+id/noImageText"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="No image provided"
+                            android:gravity="center"
+                            android:textColor="@color/text_color"
+                            android:textStyle="italic"
+                            android:visibility="gone"/>
+
+                    </FrameLayout>
+
+                    <!-- RIGHT: Score + Date + Buttons -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:paddingStart="4dp">
+
+                        <!-- TOP CONTENT (Score + Date) -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/selectedScore"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Score: ---"
+                                android:textColor="@color/text_color"
+                                android:textStyle="bold"
+                                android:maxLines="1"
+                                android:ellipsize="end"/>
+
+                            <TextView
+                                android:id="@+id/selectedDate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Saved: ---"
+                                android:textColor="@color/text_color"
+                                android:maxLines="1"
+                                android:ellipsize="end"/>
+
+                        </LinearLayout>
+
+                        <!-- BOTTOM: Buttons (anchored) -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="bottom">
+
+                            <Button
+                                android:id="@+id/openBtn"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="Open"
+                                android:textColor="@color/black"
+                                android:backgroundTint="#FDAA48"/>
+
+                            <Button
+                                android:id="@+id/deleteBtn"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="Delete"
+                                android:textColor="@color/black"
+                                android:backgroundTint="#FDAA48"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+
+
+
     </LinearLayout>
+
 
     <!-- Search + Filters + Sort -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_marginBottom="8dp">
 
         <EditText
@@ -87,27 +182,42 @@
             android:hint="Search"
             android:textColor="@color/black"
             android:textColorHint="@color/black"
-            android:background="@drawable/rounded_textbox"
+            android:background="@drawable/fully_rounded_textbox"
             android:padding="8dp"
-            android:layout_weight="2"
-            android:layout_width="0dp"
-            android:layout_height="40dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"/>
 
-        <Spinner
-            android:id="@+id/speciesFilter"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="40dp"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/rounded_dropbox"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
-        <Spinner
-            android:id="@+id/sort"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="40dp"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/rounded_dropbox"/>
+            <Spinner
+                android:id="@+id/filterBox"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/fully_rounded_dropbox"/>
+
+            <Spinner
+                android:id="@+id/sortBox"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/fully_rounded_dropbox"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filterContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="8dp"/>
+
     </LinearLayout>
 
     <!-- Scorecard List -->

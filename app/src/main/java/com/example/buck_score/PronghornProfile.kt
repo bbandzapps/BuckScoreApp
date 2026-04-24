@@ -1,10 +1,10 @@
 package com.example.buck_score
 
 import android.view.View
-import com.example.buck_score.ScoreFragment.BuckType
-import com.example.buck_score.ScoreFragment.MeasurementType
+import com.example.buck_score.BuckType
+import com.example.buck_score.MeasurementType
 import com.example.buck_score.ScoreFragment.RowConfig
-import com.example.buck_score.ScoreFragment.ScoreBreakdown
+import com.example.buck_score.ScoreBreakdown
 import com.google.android.material.color.utilities.Score
 import kotlin.math.max
 
@@ -32,13 +32,13 @@ class PronghornProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Tip to Tip Spread",
-                        type = ScoreFragment.MeasurementType.TipSpread,
+                        type = MeasurementType.TipSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Inner Spread",
-                        type = ScoreFragment.MeasurementType.InnerSpread,
+                        type = MeasurementType.InnerSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     ),
@@ -53,12 +53,12 @@ class PronghornProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Length of main horns",
-                        type = ScoreFragment.MeasurementType.MainBeam,
+                        type = MeasurementType.MainBeam,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Length of prongs",
-                        type = ScoreFragment.MeasurementType.ProngLength,
+                        type = MeasurementType.ProngLength,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
@@ -72,45 +72,45 @@ class PronghornProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Base",
-                        type = ScoreFragment.MeasurementType.Circumference(1),
+                        type = MeasurementType.Circumference(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
 //                    RowConfig(
 //                        label = "Location of Measurement",
-//                        type = ScoreFragment.MeasurementType.Loc(1),
+//                        type = MeasurementType.Loc(1),
 //                        layoutType = ScoreFragment.RowLayoutType.LOC,
 //                        showDifference = false
 //                    ),
                     RowConfig(
                         label = "1st Quarter (25% length of longer horn)",
-                        type = ScoreFragment.MeasurementType.Circumference(2),
+                        type = MeasurementType.Circumference(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(2),
+                        type = MeasurementType.Loc(2),
                         layoutType = ScoreFragment.RowLayoutType.LOC,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "2nd Quarter (50% length of longer horn)",
-                        type = ScoreFragment.MeasurementType.Circumference(3),
+                        type = MeasurementType.Circumference(3),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(3),
+                        type = MeasurementType.Loc(3),
                         layoutType = ScoreFragment.RowLayoutType.LOC,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Third Quarter (75% length of longer horn)",
-                        type = ScoreFragment.MeasurementType.Circumference(4),
+                        type = MeasurementType.Circumference(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Location of Measurement",
-                        type = ScoreFragment.MeasurementType.Loc(4),
+                        type = MeasurementType.Loc(4),
                         layoutType = ScoreFragment.RowLayoutType.LOC,
                         showDifference = false
                     )
@@ -123,7 +123,7 @@ class PronghornProfile : ScoringProfile {
 
 
     override fun calculateScore(
-        store: ScoreFragment.MeasurementStore,
+        store: MeasurementStore,
         buckType: BuckType?
     ): ScoreBreakdown {
 

@@ -74,42 +74,42 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     // ===============================
     // Enums
     // ===============================
-    enum class BuckType {
-        TYPICAL,
-        NONTYPICAL
-    }
-
-    enum class Species(val displayName: String) {
-        WHITETAIL("Whitetail Deer"),
-        COUES("Coues Deer"),
-        SITKA_BLACKTAIL("Sitka Blacktail Deer"),
-        COLUMBIA_BLACKTAIL("Colombia Blacktail Deer"),
-        MULE_DEER("Mule Deer"),
-
-        ROCKY_MOUNTAIN_ELK("Rocky Mountain Elk"),
-        ROOSEVELT_ELK("Roosevelt Elk"),
-        TULE_ELK("Tule Elk"),
-
-        YUKON_MOOSE("Alaska-Yukon Moose"),
-        CANADA_MOOSE("Canada Moose"),
-        SHIRAS_MOOSE("Shiras Moose"),
-
-        BIGHORN_SHEEP("Bighorn Sheep"),
-        DALL_SHEEP("Dall Sheep"),
-        DESERT_SHEEP("Desert Sheep"),
-        STONE_SHEEP("Stone Sheep"),
-
-        BARREN_GROUND_CARIBOU("Barren Ground Caribou"),
-        CC_BARREN_GROUND_CARIBOU("Central Canada Barren Ground Caribou"),
-        MOUNTAIN_CARIBOU("Mountain Caribou"),
-        QUEBEC_LABRADOR_CARIBOU("Quebec-Labrador Caribou"),
-        WOODLAND_CARIBOU("Woodland Caribou"),
-
-        MOUNTAIN_GOAT("Mountain Goat"),
-        BISON("Bison"),
-        MUSK_OX("Musk Ox"),
-        PRONGHORN("Pronghorn")
-    }
+//    enum class BuckType {
+//        TYPICAL,
+//        NONTYPICAL
+//    }
+//
+//    enum class Species(val displayName: String) {
+//        WHITETAIL("Whitetail Deer"),
+//        COUES("Coues Deer"),
+//        SITKA_BLACKTAIL("Sitka Blacktail Deer"),
+//        COLUMBIA_BLACKTAIL("Colombia Blacktail Deer"),
+//        MULE_DEER("Mule Deer"),
+//
+//        ROCKY_MOUNTAIN_ELK("Rocky Mountain Elk"),
+//        ROOSEVELT_ELK("Roosevelt Elk"),
+//        TULE_ELK("Tule Elk"),
+//
+//        YUKON_MOOSE("Alaska-Yukon Moose"),
+//        CANADA_MOOSE("Canada Moose"),
+//        SHIRAS_MOOSE("Shiras Moose"),
+//
+//        BIGHORN_SHEEP("Bighorn Sheep"),
+//        DALL_SHEEP("Dall Sheep"),
+//        DESERT_SHEEP("Desert Sheep"),
+//        STONE_SHEEP("Stone Sheep"),
+//
+//        BARREN_GROUND_CARIBOU("Barren Ground Caribou"),
+//        CC_BARREN_GROUND_CARIBOU("Central Canada Barren Ground Caribou"),
+//        MOUNTAIN_CARIBOU("Mountain Caribou"),
+//        QUEBEC_LABRADOR_CARIBOU("Quebec-Labrador Caribou"),
+//        WOODLAND_CARIBOU("Woodland Caribou"),
+//
+//        MOUNTAIN_GOAT("Mountain Goat"),
+//        BISON("Bison"),
+//        MUSK_OX("Musk Ox"),
+//        PRONGHORN("Pronghorn")
+//    }
 
     enum class Section{
         TYPE,
@@ -158,108 +158,108 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         }
     }
 
-    data class PairedMeasurement(
-        val type: MeasurementType,
-        val left: Double,
-        val right: Double
-    ) {
-        fun difference(): Double = kotlin.math.abs(left - right)
-        fun sum(): Double = left + right
-    }
-
-    sealed class MeasurementType {
-        data class G(val index: Int) : MeasurementType()
-        data class AbnormalPoint(val index: Int) : MeasurementType()
-        object MainBeam : MeasurementType()
-        data class Circumference(val index: Int) : MeasurementType()
-        object InnerSpread : MeasurementType()
-        object TipSpread : MeasurementType()
-        object GreatestSpread : MeasurementType()
-        object PointCount : MeasurementType()
-        object BrowPointCount : MeasurementType()
-        object Width: MeasurementType()
-        object BrowWidth: MeasurementType()
-        object ProngLength: MeasurementType()
-        data class CrownPoint(val index: Int) : MeasurementType()
-        data class Loc(val index: Int) : MeasurementType()
-    }
-
-    enum class Side { LEFT, RIGHT }
-
-    data class ScoreBreakdown(
-        val leftSum: Double,
-        val rightSum: Double,
-        val differenceTotal: Double,
-        val abnormalSum: Double,
-        val spreadCredit: Double,
-        val subtotal: Double,
-        val crownPointScore: Double,
-        val gross: Double,
-        val finalScore: Double,
-        val spreadIsCapped: Boolean = false
-    )
-
-    data class MeasurementValue(
-        val type: MeasurementType,
-        val side: Side?,
-        val value: Double
-    )
-
-
-    class MeasurementStore {
-
-        private val values = mutableListOf<MeasurementValue>()
-
-        fun update(field: MeasurementField) {
-            val newVal = MeasurementValue(
-                field.type,
-                field.side,
-                field.value()
-            )
-
-            values.removeAll { it.type == newVal.type && it.side == newVal.side }
-            values.add(newVal)
-        }
-
-        fun get(type: MeasurementType, side: Side? = null): Double {
-            return values.find { it.type == type && it.side == side }?.value ?: 0.0
-        }
-
-        fun getPaired(type: MeasurementType): PairedMeasurement {
-            val left = get(type, Side.LEFT)
-            val right = get(type, Side.RIGHT)
-            return PairedMeasurement(type, left, right)
-        }
-
-//        fun getPairedList(filter: (MeasurementType) -> Boolean): List<PairedMeasurement> {
-//            return values
-//                .map { it.type }
-//                .filter(filter)
-//                .distinct()
-//                .map { getPaired(it) }
+//    data class PairedMeasurement(
+//        val type: MeasurementType,
+//        val left: Double,
+//        val right: Double
+//    ) {
+//        fun difference(): Double = kotlin.math.abs(left - right)
+//        fun sum(): Double = left + right
+//    }
+//
+//    sealed class MeasurementType {
+//        data class G(val index: Int) : MeasurementType()
+//        data class AbnormalPoint(val index: Int) : MeasurementType()
+//        object MainBeam : MeasurementType()
+//        data class Circumference(val index: Int) : MeasurementType()
+//        object InnerSpread : MeasurementType()
+//        object TipSpread : MeasurementType()
+//        object GreatestSpread : MeasurementType()
+//        object PointCount : MeasurementType()
+//        object BrowPointCount : MeasurementType()
+//        object Width: MeasurementType()
+//        object BrowWidth: MeasurementType()
+//        object ProngLength: MeasurementType()
+//        data class CrownPoint(val index: Int) : MeasurementType()
+//        data class Loc(val index: Int) : MeasurementType()
+//    }
+//
+//    enum class Side { LEFT, RIGHT }
+//
+//    data class ScoreBreakdown(
+//        val leftSum: Double,
+//        val rightSum: Double,
+//        val differenceTotal: Double,
+//        val abnormalSum: Double,
+//        val spreadCredit: Double,
+//        val subtotal: Double,
+//        val crownPointScore: Double,
+//        val gross: Double,
+//        val finalScore: Double,
+//        val spreadIsCapped: Boolean = false
+//    )
+//
+//    data class MeasurementValue(
+//        val type: MeasurementType,
+//        val side: Side?,
+//        val value: Double
+//    )
+//
+//
+//    class MeasurementStore {
+//
+//        private val values = mutableListOf<MeasurementValue>()
+//
+//        fun update(field: MeasurementField) {
+//            val newVal = MeasurementValue(
+//                field.type,
+//                field.side,
+//                field.value()
+//            )
+//
+//            values.removeAll { it.type == newVal.type && it.side == newVal.side }
+//            values.add(newVal)
 //        }
-        fun getPairedList(
-            predicate: (MeasurementType) -> Boolean
-        ): List<PairedMeasurement> =
-            values
-                .mapNotNull { it.type.takeIf(predicate) }
-                .distinctBy { it } // still fine because types are unique per index
-                .sortedBy {
-                    when (it) {
-                        is MeasurementType.Circumference -> it.index
-                        is MeasurementType.G -> it.index
-                        is MeasurementType.AbnormalPoint -> it.index
-                        is MeasurementType.CrownPoint -> it.index
-                        else -> 0
-                    }
-                }
-                .map { getPaired(it) }
-
-        fun getAll(): List<MeasurementValue> = values
-        fun clear(){
-            values.clear()
-        }
-    }
+//
+//        fun get(type: MeasurementType, side: Side? = null): Double {
+//            return values.find { it.type == type && it.side == side }?.value ?: 0.0
+//        }
+//
+//        fun getPaired(type: MeasurementType): PairedMeasurement {
+//            val left = get(type, Side.LEFT)
+//            val right = get(type, Side.RIGHT)
+//            return PairedMeasurement(type, left, right)
+//        }
+//
+////        fun getPairedList(filter: (MeasurementType) -> Boolean): List<PairedMeasurement> {
+////            return values
+////                .map { it.type }
+////                .filter(filter)
+////                .distinct()
+////                .map { getPaired(it) }
+////        }
+//        fun getPairedList(
+//            predicate: (MeasurementType) -> Boolean
+//        ): List<PairedMeasurement> =
+//            values
+//                .mapNotNull { it.type.takeIf(predicate) }
+//                .distinctBy { it }
+//                .sortedBy {
+//                    when (it) {
+//                        is MeasurementType.Circumference -> it.index
+//                        is MeasurementType.G -> it.index
+//                        is MeasurementType.AbnormalPoint -> it.index
+//                        is MeasurementType.CrownPoint -> it.index
+//                        else -> 0
+//                    }
+//                }
+//                .map { getPaired(it) }
+//
+//        fun getAll(): List<MeasurementValue> = values
+//        fun clear(){
+//            values.clear()
+//        }
+//    }
 
     data class SectionConfig(
         val type: Section,
@@ -328,17 +328,10 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     private lateinit var finalScoreText: TextView
 
     private lateinit var animalName:EditText
-    private lateinit var leftPoints:EditText
-    private lateinit var rightPoints:EditText
     private lateinit var typicalSwitch: SwitchMaterial
     private var buckType = BuckType.TYPICAL
     private lateinit var typicalLabel:TextView
     private lateinit var nontypicalLabel:TextView
-
-    private lateinit var tipSpreadInches:EditText
-    private lateinit var tipSpreadFractions: AppCompatSpinner
-    private lateinit var greatestSpreadInches:EditText
-    private lateinit var greatestSpreadFractions: AppCompatSpinner
 
     private lateinit var photoContainer: FrameLayout
     private lateinit var buckImageView: ImageView
@@ -421,12 +414,6 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             pickImageLauncher.launch("image/*")
         }
 
-//        downloadBtn.setOnClickListener{
-//            val rootView = root.findViewById<View>(android.R.id.content)
-//            Snackbar.make(rootView, "Downloading PDF…", Snackbar.LENGTH_SHORT).show()
-//            generateScorePdf()
-//            Snackbar.make(rootView, "Downloaded successfully", Snackbar.LENGTH_SHORT).show()
-//        }
         downloadBtn.setOnClickListener {
             Snackbar.make(requireActivity().findViewById(android.R.id.content), "Generating PDF…", Snackbar.LENGTH_SHORT).show()
 
@@ -434,14 +421,35 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
                 withContext(Dispatchers.IO) {
                     generateScorePdf()
                 }
-
                 Snackbar.make(requireActivity().findViewById(android.R.id.content), "Downloaded successfully", Snackbar.LENGTH_SHORT).show()
             }
         }
 
-        saveBtn.setOnClickListener{
+        saveBtn.setOnClickListener {
 
+            val dao = (requireActivity().application as BuckScoreApp).dao
+
+            val entity = ScorecardEntity(
+                name = animalName.text.toString(),
+                species = currentSpecies.displayName,
+                buckType = if (currentProfile?.getVisibleSections()?.contains(Section.TYPE) == true) {
+                    buckType.name
+                } else {
+                    null
+                },
+                measurementsJson = measurementStore.toJson(),
+                imagePath = buckPic?.let { saveImage(requireContext(), it) },
+                netScore = currentScore.finalScore,
+                dateSaved = System.currentTimeMillis()
+            )
+
+            lifecycleScope.launch {
+                dao.insert(entity)
+
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "Saved!", Snackbar.LENGTH_SHORT).show()
+            }
         }
+
 
         setSpecies(Species.WHITETAIL)
     }
@@ -878,7 +886,8 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         val field = MeasurementField(type, side, inchesField, fractionField)
 
         fun updateStore() {
-            measurementStore.update(field)
+            //measurementStore.update(field)
+            measurementStore.update(type, side, field.value())
         }
 
         // Initial value
@@ -1462,32 +1471,32 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     }
 
 
-    private fun doubleToBC(value: Double): String {
-        val whole = value.toInt()
-        val frac = ((value - whole) * 8).roundToInt()
-
-        return when (frac) {
-            0 -> "$whole"
-            8 -> "${whole + 1}"
-            else -> "$whole $frac/8"
-        }
-    }
-
-    fun scaleBitmap(
-        bitmap: Bitmap,
-        maxWidth: Int,
-        maxHeight: Int
-    ): Bitmap {
-        val ratio = minOf(
-            maxWidth.toFloat() / bitmap.width,
-            maxHeight.toFloat() / bitmap.height
-        )
-
-        val newWidth = (bitmap.width * ratio).toInt()
-        val newHeight = (bitmap.height * ratio).toInt()
-
-        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
-    }
+//    private fun doubleToBC(value: Double): String {
+//        val whole = value.toInt()
+//        val frac = ((value - whole) * 8).roundToInt()
+//
+//        return when (frac) {
+//            0 -> "$whole"
+//            8 -> "${whole + 1}"
+//            else -> "$whole $frac/8"
+//        }
+//    }
+//
+//    fun scaleBitmap(
+//        bitmap: Bitmap,
+//        maxWidth: Int,
+//        maxHeight: Int
+//    ): Bitmap {
+//        val ratio = minOf(
+//            maxWidth.toFloat() / bitmap.width,
+//            maxHeight.toFloat() / bitmap.height
+//        )
+//
+//        val newWidth = (bitmap.width * ratio).toInt()
+//        val newHeight = (bitmap.height * ratio).toInt()
+//
+//        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+//    }
 
     private fun getNextIndex(
         baseType: MeasurementType

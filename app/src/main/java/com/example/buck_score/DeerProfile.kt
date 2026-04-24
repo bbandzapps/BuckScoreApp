@@ -1,10 +1,10 @@
 package com.example.buck_score
 
 import android.view.View
-import com.example.buck_score.ScoreFragment.BuckType
-import com.example.buck_score.ScoreFragment.MeasurementType
+import com.example.buck_score.BuckType
+import com.example.buck_score.MeasurementType
 import com.example.buck_score.ScoreFragment.RowConfig
-import com.example.buck_score.ScoreFragment.ScoreBreakdown
+import com.example.buck_score.ScoreBreakdown
 import com.google.android.material.color.utilities.Score
 import kotlin.math.max
 
@@ -35,7 +35,7 @@ class DeerProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "",
-                        type = ScoreFragment.MeasurementType.PointCount,
+                        type = MeasurementType.PointCount,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC,
                         showDifference = false
                     )
@@ -50,19 +50,19 @@ class DeerProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Tip to Tip (Main Beams)",
-                        type = ScoreFragment.MeasurementType.TipSpread,
+                        type = MeasurementType.TipSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Greatest Spread",
-                        type = ScoreFragment.MeasurementType.GreatestSpread,
+                        type = MeasurementType.GreatestSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Inner Spread",
-                        type = ScoreFragment.MeasurementType.InnerSpread,
+                        type = MeasurementType.InnerSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     )
@@ -77,13 +77,13 @@ class DeerProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Abnormal Point 1",
-                        type = ScoreFragment.MeasurementType.AbnormalPoint(1),
+                        type = MeasurementType.AbnormalPoint(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Abnormal Point 2",
-                        type = ScoreFragment.MeasurementType.AbnormalPoint(2),
+                        type = MeasurementType.AbnormalPoint(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
                         showDifference = false
                     )
@@ -99,27 +99,27 @@ class DeerProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Main Beams",
-                        type = ScoreFragment.MeasurementType.MainBeam,
+                        type = MeasurementType.MainBeam,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "G1: First Point",
-                        type = ScoreFragment.MeasurementType.G(1),
+                        type = MeasurementType.G(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "G2: Second Point",
-                        type = ScoreFragment.MeasurementType.G(2),
+                        type = MeasurementType.G(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "G3: Third Point",
-                        type = ScoreFragment.MeasurementType.G(3),
+                        type = MeasurementType.G(3),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "G4: Fourth Point",
-                        type = ScoreFragment.MeasurementType.G(4),
+                        type = MeasurementType.G(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
@@ -134,22 +134,22 @@ class DeerProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Smallest circumference between G1 and the burr",
-                        type = ScoreFragment.MeasurementType.Circumference(1),
+                        type = MeasurementType.Circumference(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Smallest circumference between G1 and G2",
-                        type = ScoreFragment.MeasurementType.Circumference(2),
+                        type = MeasurementType.Circumference(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Smallest circumference between G2 and G3",
-                        type = ScoreFragment.MeasurementType.Circumference(3),
+                        type = MeasurementType.Circumference(3),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Smallest circumference between G3 and G4",
-                        type = ScoreFragment.MeasurementType.Circumference(4),
+                        type = MeasurementType.Circumference(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
@@ -161,7 +161,7 @@ class DeerProfile : ScoringProfile {
 
 
     override fun calculateScore(
-        store: ScoreFragment.MeasurementStore,
+        store: MeasurementStore,
         buckType: BuckType?
     ): ScoreBreakdown {
 

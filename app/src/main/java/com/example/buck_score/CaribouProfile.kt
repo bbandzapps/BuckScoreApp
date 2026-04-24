@@ -1,10 +1,10 @@
 package com.example.buck_score
 
 import android.view.View
-import com.example.buck_score.ScoreFragment.BuckType
-import com.example.buck_score.ScoreFragment.MeasurementType
+import com.example.buck_score.BuckType
+import com.example.buck_score.MeasurementType
 import com.example.buck_score.ScoreFragment.RowConfig
-import com.example.buck_score.ScoreFragment.ScoreBreakdown
+import com.example.buck_score.ScoreBreakdown
 import com.google.android.material.color.utilities.Score
 import kotlin.math.max
 
@@ -34,12 +34,12 @@ class CaribouProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Points on antlers",
-                        type = ScoreFragment.MeasurementType.PointCount,
+                        type = MeasurementType.PointCount,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC
                     ),
                     RowConfig(
                         label = "Points on brows",
-                        type = ScoreFragment.MeasurementType.BrowPointCount,
+                        type = MeasurementType.BrowPointCount,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT_NO_FRAC,
                         showDifference = false
                     )
@@ -54,19 +54,19 @@ class CaribouProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Tip to Tip (Main Beams)",
-                        type = ScoreFragment.MeasurementType.TipSpread,
+                        type = MeasurementType.TipSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Greatest Spread",
-                        type = ScoreFragment.MeasurementType.GreatestSpread,
+                        type = MeasurementType.GreatestSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Inner Spread",
-                        type = ScoreFragment.MeasurementType.InnerSpread,
+                        type = MeasurementType.InnerSpread,
                         layoutType = ScoreFragment.RowLayoutType.SINGLE,
                         showDifference = false
                     )
@@ -81,13 +81,13 @@ class CaribouProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Brow palm",
-                        type = ScoreFragment.MeasurementType.BrowWidth,
+                        type = MeasurementType.BrowWidth,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Top Palm",
-                        type = ScoreFragment.MeasurementType.Width,
+                        type = MeasurementType.Width,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
@@ -101,33 +101,33 @@ class CaribouProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Main Beams",
-                        type = ScoreFragment.MeasurementType.MainBeam,
+                        type = MeasurementType.MainBeam,
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "First Point (Brow Palm)",
-                        type = ScoreFragment.MeasurementType.G(1),
+                        type = MeasurementType.G(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT,
                         showDifference = false
                     ),
                     RowConfig(
                         label = "Second Point (Bez)",
-                        type = ScoreFragment.MeasurementType.G(2),
+                        type = MeasurementType.G(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Rear Point",
-                        type = ScoreFragment.MeasurementType.G(3),
+                        type = MeasurementType.G(3),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Second Longest Top Point",
-                        type = ScoreFragment.MeasurementType.G(4),
+                        type = MeasurementType.G(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Longest Top Point",
-                        type = ScoreFragment.MeasurementType.G(5),
+                        type = MeasurementType.G(5),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
@@ -141,22 +141,22 @@ class CaribouProfile : ScoringProfile {
                 rows = listOf(
                     RowConfig(
                         label = "Smallest circumference between Brow and Bez points",
-                        type = ScoreFragment.MeasurementType.Circumference(1),
+                        type = MeasurementType.Circumference(1),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Smallest circumference between Bez and Rear points",
-                        type = ScoreFragment.MeasurementType.Circumference(2),
+                        type = MeasurementType.Circumference(2),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Smallest circumference between Rear point and first top point",
-                        type = ScoreFragment.MeasurementType.Circumference(3),
+                        type = MeasurementType.Circumference(3),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     ),
                     RowConfig(
                         label = "Smallest circumference between two longest top palm points",
-                        type = ScoreFragment.MeasurementType.Circumference(4),
+                        type = MeasurementType.Circumference(4),
                         layoutType = ScoreFragment.RowLayoutType.LEFT_RIGHT
                     )
                 ),
@@ -168,7 +168,7 @@ class CaribouProfile : ScoringProfile {
 
 
     override fun calculateScore(
-        store: ScoreFragment.MeasurementStore,
+        store: MeasurementStore,
         buckType: BuckType?
     ): ScoreBreakdown {
 

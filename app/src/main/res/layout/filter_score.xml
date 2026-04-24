@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <EditText
+        android:id="@+id/minScore"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:hint="Min"
+        android:layout_height="40dp"/>
+
+    <TextView
+        android:text=" to "
+        android:padding="8dp"
+        android:textSize="16dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"/>
+
+    <EditText
+        android:id="@+id/maxScore"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:hint="Max"
+        android:layout_height="40dp"/>
+</LinearLayout>

@@ -1,12 +1,12 @@
 package com.example.buck_score
 
-import com.example.buck_score.ScoreFragment.PairedMeasurement
+import com.example.buck_score.PairedMeasurement
 
 interface ScoringProfile {
     fun getVisibleSections():List<ScoreFragment.Section>
     fun getSectionConfigs(): List<ScoreFragment.SectionConfig>
     fun getScoreDisplayConfig(): ScoreFragment.ScoreDisplayConfig
-    fun calculateScore(store: ScoreFragment.MeasurementStore, buckType: ScoreFragment.BuckType?): ScoreFragment.ScoreBreakdown
+    fun calculateScore(store: MeasurementStore, buckType: BuckType?): ScoreBreakdown
 
     fun getTotalDifference(pairs: List<PairedMeasurement>): Double =
         pairs.sumOf { it.difference() }

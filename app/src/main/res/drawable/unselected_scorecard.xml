@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FDAA48"/> <!-- same as your card bg -->
+            <corners android:radius="8dp"/>
+            <stroke android:width="4dp" android:color="#F0944D"/>
+        </shape>
+    </item>
+
+</layer-list>
