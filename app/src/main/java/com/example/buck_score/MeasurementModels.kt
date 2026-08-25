@@ -128,7 +128,14 @@ class MeasurementStore {
             .map { getPaired(it) }
 
     fun getAll(): List<MeasurementValue> = values
+    fun setAll(newVals: List<MeasurementValue>){
+        clear()
+        values.addAll(newVals)
+    }
     fun clear(){
         values.clear()
+    }
+    fun contains(type: MeasurementType): Boolean{
+        return values.firstOrNull{ it.type == type} != null
     }
 }

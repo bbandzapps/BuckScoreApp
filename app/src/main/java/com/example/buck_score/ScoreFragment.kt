@@ -31,11 +31,13 @@ import android.content.ContentValues
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
+import android.util.Log
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 //import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.text.font.Typeface
 import androidx.core.graphics.drawable.toBitmap
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
@@ -74,42 +76,6 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     // ===============================
     // Enums
     // ===============================
-//    enum class BuckType {
-//        TYPICAL,
-//        NONTYPICAL
-//    }
-//
-//    enum class Species(val displayName: String) {
-//        WHITETAIL("Whitetail Deer"),
-//        COUES("Coues Deer"),
-//        SITKA_BLACKTAIL("Sitka Blacktail Deer"),
-//        COLUMBIA_BLACKTAIL("Colombia Blacktail Deer"),
-//        MULE_DEER("Mule Deer"),
-//
-//        ROCKY_MOUNTAIN_ELK("Rocky Mountain Elk"),
-//        ROOSEVELT_ELK("Roosevelt Elk"),
-//        TULE_ELK("Tule Elk"),
-//
-//        YUKON_MOOSE("Alaska-Yukon Moose"),
-//        CANADA_MOOSE("Canada Moose"),
-//        SHIRAS_MOOSE("Shiras Moose"),
-//
-//        BIGHORN_SHEEP("Bighorn Sheep"),
-//        DALL_SHEEP("Dall Sheep"),
-//        DESERT_SHEEP("Desert Sheep"),
-//        STONE_SHEEP("Stone Sheep"),
-//
-//        BARREN_GROUND_CARIBOU("Barren Ground Caribou"),
-//        CC_BARREN_GROUND_CARIBOU("Central Canada Barren Ground Caribou"),
-//        MOUNTAIN_CARIBOU("Mountain Caribou"),
-//        QUEBEC_LABRADOR_CARIBOU("Quebec-Labrador Caribou"),
-//        WOODLAND_CARIBOU("Woodland Caribou"),
-//
-//        MOUNTAIN_GOAT("Mountain Goat"),
-//        BISON("Bison"),
-//        MUSK_OX("Musk Ox"),
-//        PRONGHORN("Pronghorn")
-//    }
 
     enum class Section{
         TYPE,
@@ -158,109 +124,6 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         }
     }
 
-//    data class PairedMeasurement(
-//        val type: MeasurementType,
-//        val left: Double,
-//        val right: Double
-//    ) {
-//        fun difference(): Double = kotlin.math.abs(left - right)
-//        fun sum(): Double = left + right
-//    }
-//
-//    sealed class MeasurementType {
-//        data class G(val index: Int) : MeasurementType()
-//        data class AbnormalPoint(val index: Int) : MeasurementType()
-//        object MainBeam : MeasurementType()
-//        data class Circumference(val index: Int) : MeasurementType()
-//        object InnerSpread : MeasurementType()
-//        object TipSpread : MeasurementType()
-//        object GreatestSpread : MeasurementType()
-//        object PointCount : MeasurementType()
-//        object BrowPointCount : MeasurementType()
-//        object Width: MeasurementType()
-//        object BrowWidth: MeasurementType()
-//        object ProngLength: MeasurementType()
-//        data class CrownPoint(val index: Int) : MeasurementType()
-//        data class Loc(val index: Int) : MeasurementType()
-//    }
-//
-//    enum class Side { LEFT, RIGHT }
-//
-//    data class ScoreBreakdown(
-//        val leftSum: Double,
-//        val rightSum: Double,
-//        val differenceTotal: Double,
-//        val abnormalSum: Double,
-//        val spreadCredit: Double,
-//        val subtotal: Double,
-//        val crownPointScore: Double,
-//        val gross: Double,
-//        val finalScore: Double,
-//        val spreadIsCapped: Boolean = false
-//    )
-//
-//    data class MeasurementValue(
-//        val type: MeasurementType,
-//        val side: Side?,
-//        val value: Double
-//    )
-//
-//
-//    class MeasurementStore {
-//
-//        private val values = mutableListOf<MeasurementValue>()
-//
-//        fun update(field: MeasurementField) {
-//            val newVal = MeasurementValue(
-//                field.type,
-//                field.side,
-//                field.value()
-//            )
-//
-//            values.removeAll { it.type == newVal.type && it.side == newVal.side }
-//            values.add(newVal)
-//        }
-//
-//        fun get(type: MeasurementType, side: Side? = null): Double {
-//            return values.find { it.type == type && it.side == side }?.value ?: 0.0
-//        }
-//
-//        fun getPaired(type: MeasurementType): PairedMeasurement {
-//            val left = get(type, Side.LEFT)
-//            val right = get(type, Side.RIGHT)
-//            return PairedMeasurement(type, left, right)
-//        }
-//
-////        fun getPairedList(filter: (MeasurementType) -> Boolean): List<PairedMeasurement> {
-////            return values
-////                .map { it.type }
-////                .filter(filter)
-////                .distinct()
-////                .map { getPaired(it) }
-////        }
-//        fun getPairedList(
-//            predicate: (MeasurementType) -> Boolean
-//        ): List<PairedMeasurement> =
-//            values
-//                .mapNotNull { it.type.takeIf(predicate) }
-//                .distinctBy { it }
-//                .sortedBy {
-//                    when (it) {
-//                        is MeasurementType.Circumference -> it.index
-//                        is MeasurementType.G -> it.index
-//                        is MeasurementType.AbnormalPoint -> it.index
-//                        is MeasurementType.CrownPoint -> it.index
-//                        else -> 0
-//                    }
-//                }
-//                .map { getPaired(it) }
-//
-//        fun getAll(): List<MeasurementValue> = values
-//        fun clear(){
-//            values.clear()
-//        }
-//    }
-
     data class SectionConfig(
         val type: Section,
         val title: String,
@@ -298,7 +161,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     // Class Variables
     // ===============================
     private val measurementStore = MeasurementStore()
-    //private val measurements = mutableListOf<MeasurementField>()
+    private val fields = mutableListOf<MeasurementField>()
     private lateinit var sectionViews: Map<Section, SectionView>
 
     val eighthFractions = arrayOf(
@@ -339,6 +202,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
 
     private lateinit var downloadBtn: Button
     private lateinit var saveBtn: Button
+    private lateinit var saveNewBtn: Button
 
     private lateinit var currentScore: ScoreBreakdown
     private var buckPic: Bitmap? = null
@@ -352,6 +216,11 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     private var currentSpecies: Species = Species.WHITETAIL
     private var currentProfile: ScoringProfile = DeerProfile()
     private lateinit var speciesImage: ImageView
+
+    private val viewModel: ScoreViewModel by viewModels()
+    var editingScorecardId: Int? = null
+    private lateinit var dao: ScorecardDao
+    private var isLoadingScorecard: Boolean = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -392,6 +261,13 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
 
         downloadBtn = root.findViewById(R.id.downloadBtn)
         saveBtn = root.findViewById(R.id.saveBtn)
+        saveNewBtn = root.findViewById(R.id.saveNewBtn)
+
+        saveBtn.visibility = View.GONE
+
+        dao = (requireActivity().application as BuckScoreApp)
+            .database
+            .scorecardDao()
 
 
         // ============================
@@ -424,14 +300,14 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
                 Snackbar.make(requireActivity().findViewById(android.R.id.content), "Downloaded successfully", Snackbar.LENGTH_SHORT).show()
             }
         }
-
         saveBtn.setOnClickListener {
 
             val dao = (requireActivity().application as BuckScoreApp).dao
 
             val entity = ScorecardEntity(
+                id = editingScorecardId?: 0,
                 name = animalName.text.toString(),
-                species = currentSpecies.displayName,
+                species = currentSpecies.name,//name,
                 buckType = if (currentProfile?.getVisibleSections()?.contains(Section.TYPE) == true) {
                     buckType.name
                 } else {
@@ -446,12 +322,72 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             lifecycleScope.launch {
                 dao.insert(entity)
 
-                Snackbar.make(requireActivity().findViewById(android.R.id.content), "Saved!", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "Scorecard updated!", Snackbar.LENGTH_SHORT).show()
             }
         }
 
+        saveNewBtn.setOnClickListener {
 
-        setSpecies(Species.WHITETAIL)
+            val dao = (requireActivity().application as BuckScoreApp).dao
+
+            val entity = ScorecardEntity(
+                id = 0,
+                name = animalName.text.toString(),
+                species = currentSpecies.name,//name,
+                buckType = if (currentProfile?.getVisibleSections()?.contains(Section.TYPE) == true) {
+                    buckType.name
+                } else {
+                    null
+                },
+                measurementsJson = measurementStore.toJson(),
+                imagePath = buckPic?.let { saveImage(requireContext(), it) },
+                netScore = currentScore.finalScore,
+                dateSaved = System.currentTimeMillis()
+            )
+
+
+            lifecycleScope.launch {
+                val workingID = dao.insert(entity)
+                editingScorecardId = workingID.toInt()
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "New scorecard saved!", Snackbar.LENGTH_SHORT).show()
+            }
+            if(saveBtn.visibility == View.GONE)
+                saveBtn.visibility = View.VISIBLE
+        }
+
+        val scorecardId = arguments?.getInt("scorecardId", -1)
+        if (scorecardId != null && scorecardId != -1) {
+            lifecycleScope.launch {
+                val entity = withContext(Dispatchers.IO) {
+                    dao.getById(scorecardId)
+                }
+
+                entity?.let {
+                    loadScorecard(it)
+                }
+            }
+            arguments?.remove("scorecardId")
+        }
+        else{
+            setSpecies(Species.WHITETAIL)
+        }
+
+
+//        if(editingScorecardId != null)
+//        {
+//            animalName.setText(viewModel.name)
+//
+//            currentSpecies = viewModel.species
+//            setSpecies(currentSpecies)
+//
+//            buckType = viewModel.buckType
+//
+//            viewModel.measurementStore?.let { measurementStore.setAll(it.getAll()) }
+//            viewModel.measurementStore?.let { populateFieldsFromSavedData(it) }
+//
+//        }
+
+
     }
 
     private val pickImageLauncher =
@@ -486,6 +422,7 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         clearScoreDisplay()
         clearFields()
         hideAllSections()
+        saveBtn.visibility = View.GONE
 
         currentSpecies = species
         currentProfile = species.profile()
@@ -877,52 +814,144 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
     // REGISTRATION / FIELD LISTENERS
     // ===============================
 
+//    private fun registerMeasurementViews(
+//        type: MeasurementType,
+//        side: Side?,
+//        inchesField: EditText,
+//        fractionField: Spinner? = null
+//    ) {
+//        val field = MeasurementField(type, side, inchesField, fractionField)
+//        fields.add(field)
+////        fun updateStore() {
+////            //measurementStore.update(field)
+////            measurementStore.update(type, side, field.value())
+////        }
+//            fun updateStore() {
+//                Log.d(
+//                    "FIELD_INIT",
+//                    "$type $side: spinner=${fractionField?.selectedItemPosition}, value=${field.value()}"
+//                )
+//
+//                measurementStore.update(type, side, field.value())
+//            }
+//
+//        // Initial value
+//        updateStore()
+//
+//        // Text changes
+//        inchesField.addTextChangedListener(object : TextWatcher {
+//            override fun afterTextChanged(s: Editable?) {
+//                if(isLoadingScorecard)
+//                    return
+//                updateStore()
+//                recalcScore()
+//            }
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+//        })
+//
+//        // Spinner changes (if exists)
+//        fractionField?.let {
+//            when(type){
+//                is MeasurementType.Loc -> loadLocFractions(it)
+//                else -> loadEighths(it)
+//            }
+//            it.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+//                override fun onItemSelected(
+//                    parent: AdapterView<*>?,
+//                    view: View?,
+//                    position: Int,
+//                    id: Long
+//                ) {
+//                    if(isLoadingScorecard)
+//                        return
+//                    updateStore()
+//                    recalcScore()
+//                }
+//
+//                override fun onNothingSelected(parent: AdapterView<*>?) {}
+//            }
+//        }
+//    }
+
     private fun registerMeasurementViews(
         type: MeasurementType,
         side: Side?,
         inchesField: EditText,
         fractionField: Spinner? = null
     ) {
-        val field = MeasurementField(type, side, inchesField, fractionField)
+        val field = MeasurementField(
+            type,
+            side,
+            inchesField,
+            fractionField
+        )
 
         fun updateStore() {
-            //measurementStore.update(field)
+            Log.d(
+                "FIELD_INIT",
+                "$type $side: spinner=${fractionField?.selectedItemPosition}, value=${field.value()}"
+            )
+
             measurementStore.update(type, side, field.value())
         }
+        fields.add(field)
 
-        // Initial value
-        updateStore()
-
-        // Text changes
-        inchesField.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                updateStore()
-                recalcScore()
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-        // Spinner changes (if exists)
         fractionField?.let {
-            when(type){
+            when (type) {
                 is MeasurementType.Loc -> loadLocFractions(it)
                 else -> loadEighths(it)
             }
-            it.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    updateStore()
-                    recalcScore()
-                }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
+            it.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (isLoadingScorecard)
+                            return
+
+                        updateStore()
+                        recalcScore()
+                    }
+
+                    override fun onNothingSelected(
+                        parent: AdapterView<*>?
+                    ) {}
+                }
         }
+
+        // Now the spinner has been initialized.
+        updateStore()
+
+        inchesField.addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(s: Editable?) {
+                if (isLoadingScorecard)
+                    return
+
+                updateStore()
+                recalcScore()
+            }
+
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {}
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {}
+        })
     }
 
 
@@ -1423,6 +1452,203 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
         root.findViewById<LinearLayout>(R.id.widthsSection).visibility = View.VISIBLE
     }
 
+    // ===============================
+    // Loading / State Management
+    // ===============================
+
+    fun buildScorecardEntity(id: Int): ScorecardEntity {
+        return ScorecardEntity(
+            id = id,
+            name = animalName.text.toString(),
+            species = currentSpecies.displayName,
+            buckType = buckType?.name,
+            measurementsJson = measurementStore.toJson(),
+            imagePath = buckPic?.let { saveImage(requireContext(), it) },
+            netScore = currentScore.finalScore,
+            dateSaved = System.currentTimeMillis()
+        )
+    }
+
+    fun loadScorecard(entity: ScorecardEntity) {
+
+        // 1. Save ID for editing
+        editingScorecardId = entity.id
+
+        // 2. Name
+        animalName.setText(entity.name)
+
+        // 3. Species
+        currentSpecies = Species.valueOf(entity.species)
+        setSpecies(currentSpecies)
+
+        // 4. BuckType
+        buckType = entity.buckType?.let { BuckType.valueOf(it) }
+            ?: BuckType.TYPICAL
+
+        // 5. Measurements
+        val values = jsonToMeasurements(entity.measurementsJson)
+        measurementStore.setAll(values)
+        ensureDynamicRowsExist(measurementStore)
+        populateFieldsFromSavedData(measurementStore)
+
+        // 6. Image
+        if (entity.imagePath != null) {
+            buckImageView.visibility = View.VISIBLE
+            addPhotoText.visibility = View.GONE
+            val bitmap = BitmapFactory.decodeFile(entity.imagePath)
+            buckPic = bitmap
+            buckImageView.setImageBitmap(bitmap)
+        } else {
+            buckPic = null
+            buckImageView.setImageDrawable(null)
+        }
+
+        // 7. Recalculate
+        recalcScore()
+    }
+
+
+    fun populateFieldsFromSavedData(store: MeasurementStore){
+        isLoadingScorecard = true
+        ensureDynamicRowsExist(store)
+        val tempFields = fields.toList()
+        store.getAll().forEach { value ->
+
+            val field = tempFields.find {
+                it.type == value.type && it.side == value.side
+            }
+
+            field?.inchesField?.setText(value.value.toInt().toString())
+
+            val fraction = value.value % 1
+            val denominator = when (value.type) {
+                is MeasurementType.Loc -> 32
+                else -> 8
+            }
+
+            val index = (fraction * denominator)
+                .roundToInt()
+                .coerceIn(0, denominator - 1)
+            field?.fractionField?.setSelection(index)
+
+            Log.d(
+                "LOAD",
+                "Found field = ${value.type}, ${value.side}, ${value.value}"
+            )
+        }
+
+        isLoadingScorecard = false
+    }
+
+    fun ensureDynamicRowsExist(store: MeasurementStore){
+        val gPoints = store.getAll().filter { it.type is MeasurementType.G }
+        val abnormals = store.getAll().filter { it.type is MeasurementType.AbnormalPoint }
+        val crowns = store.getAll().filter { it.type is MeasurementType.CrownPoint }
+        if(gPoints.isNotEmpty()){
+            val maxIndex = gPoints.maxOfOrNull {
+                (it.type as MeasurementType.G).index
+            } ?: 0
+            loadDynamicRows(MeasurementType.G(1), maxIndex)
+        }
+        if(abnormals.isNotEmpty()){
+            val maxIndex = abnormals.maxOfOrNull {
+                (it.type as MeasurementType.AbnormalPoint).index
+            } ?: 0
+            loadDynamicRows(MeasurementType.AbnormalPoint(1), maxIndex)
+        }
+        if(crowns.isNotEmpty()){
+            val maxIndex = crowns.maxOfOrNull {
+                (it.type as MeasurementType.CrownPoint).index
+            } ?: 0
+            loadDynamicRows(MeasurementType.CrownPoint(1), maxIndex)
+        }
+    }
+
+    fun loadDynamicRows(type: MeasurementType, max: Int){
+        var totalFields = emptyList<MeasurementField>()
+        var section: LinearLayout
+        when (type){
+            is MeasurementType.G -> {
+                totalFields = fields.filter { it.type is MeasurementType.G }
+                section = root.findViewById<LinearLayout>(R.id.lengthsSection)
+            }
+            is MeasurementType.AbnormalPoint -> {
+                totalFields = fields.filter { it.type is MeasurementType.AbnormalPoint }
+                section = root.findViewById<LinearLayout>(R.id.abnormalPointsSection)
+            }
+            is MeasurementType.CrownPoint -> {
+                totalFields = fields.filter { it.type is MeasurementType.CrownPoint }
+                section = root.findViewById<LinearLayout>(R.id.crownPointsSection)
+            }
+            else -> return
+        }
+        val defaultFields = totalFields.size
+        val container = section.findViewById<LinearLayout>(R.id.rowsContainer)
+//        for (index in (defaultFields + 1)..max) {
+//            when(type){
+//                is MeasurementType.G -> addStandardRow(container,MeasurementType.G(index).displayMeasurementName(),MeasurementType.G(index))
+//                is MeasurementType.AbnormalPoint -> addStandardRow(container,MeasurementType.AbnormalPoint(index).displayMeasurementName(),MeasurementType.AbnormalPoint(index))
+//                is MeasurementType.CrownPoint -> addStandardRow(container,MeasurementType.CrownPoint(index).displayMeasurementName(),MeasurementType.CrownPoint(index))
+//                else -> return
+//            }
+//        }
+
+        for (index in 1..max) {
+
+            val alreadyExists = fields.any {
+                when(type){
+                    is MeasurementType.G -> it.type == MeasurementType.G(index)
+                    is MeasurementType.AbnormalPoint -> it.type == MeasurementType.AbnormalPoint(index)
+                    is MeasurementType.CrownPoint -> it.type == MeasurementType.CrownPoint(index)
+                    else -> return
+                }
+                it.type == MeasurementType.G(index)
+            }
+//            val alreadyExists = fields.any {
+//                when (type) {
+//                    is MeasurementType.G ->
+//                        it.type == MeasurementType.G(index)
+//
+//                    is MeasurementType.AbnormalPoint ->
+//                        it.type == MeasurementType.AbnormalPoint(index)
+//
+//                    is MeasurementType.CrownPoint ->
+//                        it.type == MeasurementType.CrownPoint(index)
+//
+//                    else -> false
+//                }
+//            }
+//            Log.d(
+//                "LOAD",
+//                "Found field = ${type}, ${index}"
+//            )
+
+            if (!alreadyExists) {
+                when(type){
+                    is MeasurementType.G -> addStandardRow(container,MeasurementType.G(index).displayMeasurementName(),MeasurementType.G(index))
+                    is MeasurementType.AbnormalPoint -> addStandardRow(container,MeasurementType.AbnormalPoint(index).displayMeasurementName(),MeasurementType.AbnormalPoint(index))
+                    is MeasurementType.CrownPoint -> addStandardRow(container,MeasurementType.CrownPoint(index).displayMeasurementName(),MeasurementType.CrownPoint(index))
+                    else -> return
+                }
+            }
+        }
+
+    }
+
+
+
+    override fun onPause() {
+        super.onPause()
+
+//        viewModel.name = animalName.text.toString()
+//        viewModel.species = currentSpecies
+//        viewModel.buckType = buckType
+//        viewModel.measurementStore = measurementStore
+//        viewModel.imagePath = buckPic?.let { saveImage(requireContext(), it) }
+//        viewModel.editingId = editingScorecardId
+    }
+
+
 
     // ===============================
     // MISCELLANEOUS HELPERS
@@ -1469,34 +1695,6 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             else -> index.toString()
         }
     }
-
-
-//    private fun doubleToBC(value: Double): String {
-//        val whole = value.toInt()
-//        val frac = ((value - whole) * 8).roundToInt()
-//
-//        return when (frac) {
-//            0 -> "$whole"
-//            8 -> "${whole + 1}"
-//            else -> "$whole $frac/8"
-//        }
-//    }
-//
-//    fun scaleBitmap(
-//        bitmap: Bitmap,
-//        maxWidth: Int,
-//        maxHeight: Int
-//    ): Bitmap {
-//        val ratio = minOf(
-//            maxWidth.toFloat() / bitmap.width,
-//            maxHeight.toFloat() / bitmap.height
-//        )
-//
-//        val newWidth = (bitmap.width * ratio).toInt()
-//        val newHeight = (bitmap.height * ratio).toInt()
-//
-//        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
-//    }
 
     private fun getNextIndex(
         baseType: MeasurementType
@@ -1564,6 +1762,4 @@ class ScoreFragment : Fragment(R.layout.fragment_score) {
             Species.MOUNTAIN_GOAT -> R.drawable.final_white_mountain_goat_nobg
         }
     }
-
-
 }

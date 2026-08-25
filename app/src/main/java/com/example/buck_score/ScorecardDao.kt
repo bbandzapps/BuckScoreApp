@@ -3,13 +3,15 @@ package com.example.buck_score
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
 interface ScorecardDao {
 
-    @Insert
-    suspend fun insert(scorecard: ScorecardEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(scorecard: ScorecardEntity): Long
+
 
     @Query("SELECT * FROM scorecards ORDER BY dateSaved DESC")
     suspend fun getAll(): List<ScorecardEntity>
@@ -32,6 +34,9 @@ AND (:species IS NULL OR species = :species)
         endDate: Long?,
         species: String?
     ): List<ScorecardEntity>
+
+    @Query("""SELECT * FROM scorecards WHERE :scorecardId == id""")
+    suspend fun getById(scorecardId: Int): ScorecardEntity
 
     @Delete
     suspend fun delete(scorecard: ScorecardEntity)

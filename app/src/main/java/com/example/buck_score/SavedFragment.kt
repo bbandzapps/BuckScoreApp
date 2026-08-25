@@ -15,8 +15,10 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Job
@@ -35,6 +37,7 @@ class SavedFragment: Fragment(R.layout.fragment_saved) {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ScorecardAdapter
     private lateinit var dao: ScorecardDao
+    var selectedCardId: Int? = null
 
     private lateinit var emptySelectedText: TextView
     private lateinit var selectedContent: LinearLayout
@@ -100,9 +103,14 @@ class SavedFragment: Fragment(R.layout.fragment_saved) {
 
         recyclerView = view.findViewById(R.id.scorecardRecycler)
 
-        adapter = ScorecardAdapter(emptyList()) { selected ->
-            displaySelectedCard(selected)
+//        adapter = ScorecardAdapter(emptyList()) { selected ->
+//            displaySelectedCard(selected)
+//        }
+        adapter = ScorecardAdapter(emptyList()) { card ->
+            selectedCardId = card.id
+            displaySelectedCard(card)
         }
+
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
@@ -130,6 +138,14 @@ class SavedFragment: Fragment(R.layout.fragment_saved) {
                 }
                 .setNegativeButton("Cancel", null)
                 .show()
+        }
+
+        openBtn.setOnClickListener{
+            val selected = selectedCardId ?: return@setOnClickListener
+            findNavController().navigate(
+                R.id.scoreFragment,
+                bundleOf("scorecardId" to selected)
+            )
         }
     }
 
@@ -224,7 +240,7 @@ class SavedFragment: Fragment(R.layout.fragment_saved) {
             1 -> list.sortedBy { it.dateSaved }
             2 -> list.sortedBy { it.name.lowercase() }
             3 -> list.sortedByDescending { it.name.lowercase() }
-            4 -> list.sortedBy { it.species.lowercase() }
+            4 -> list.sortedBy { Species.valueOf(it.species).displayName.lowercase() }
             5 -> list.sortedByDescending { it.species.lowercase() }
             6 -> list.sortedByDescending { it.netScore }
             7 -> list.sortedBy { it.netScore }
@@ -371,7 +387,7 @@ class SavedFragment: Fragment(R.layout.fragment_saved) {
         selectedName.text = card.name
         //selectedDetails.text = "${card.species} | ${card.buckType ?: ""}"
         selectedDetails.text = buildString {
-            append(card.species)
+            append(Species.valueOf(card.species).displayName)
             card.buckType?.let { append(" | $it") }
         }
 

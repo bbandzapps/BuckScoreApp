@@ -19,7 +19,8 @@ class ScorecardAdapter(
     private val onClick: (ScorecardEntity) -> Unit
 ) : RecyclerView.Adapter<ScorecardAdapter.ScorecardViewHolder>() {
 
-    private var selectedPosition = -1
+    //private var selectedPosition = -1
+    var selectedId: Int? = null
 
     inner class ScorecardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.cardName)
@@ -40,38 +41,64 @@ class ScorecardAdapter(
         val item = items[position]
 
         holder.name.text = item.name
-        holder.species.text = item.species
+        //holder.species.text = item.species
         //holder.type.text = item.buckType ?: "-"
         holder.species.text = buildString {
-            append(item.species)
+            append(Species.valueOf(item.species).displayName)
             item.buckType?.let { append(" | $it") }
         }
         holder.score.text = "Score: ${doubleToBC(item.netScore)}"
 
         holder.date.text = formatDate(item.dateSaved)
 
+//        holder.itemView.setOnClickListener {
+//            val pos = holder.adapterPosition
+//            if (pos == RecyclerView.NO_POSITION) return@setOnClickListener
+//
+//            val previous = selectedPosition
+//            selectedPosition = pos
+//
+//            notifyItemChanged(previous)
+//            notifyItemChanged(selectedPosition)
+//
+//            onClick(items[pos])
+//        }
         holder.itemView.setOnClickListener {
             val pos = holder.adapterPosition
             if (pos == RecyclerView.NO_POSITION) return@setOnClickListener
 
-            val previous = selectedPosition
-            selectedPosition = pos
+            val item = items[pos]
 
-            notifyItemChanged(previous)
-            notifyItemChanged(selectedPosition)
+            val previousId = selectedId
+            selectedId = item.id
 
-            onClick(items[pos])
+            notifyDataSetChanged() // simple + safe
+
+            onClick(item)
         }
 
+//        holder.itemView.setBackgroundResource(
+//            if (position == selectedPosition)
+//                R.drawable.selected_border
+//            else
+//                R.drawable.unselected_scorecard
+//        )
+        val isSelected = item.id == selectedId
         holder.itemView.setBackgroundResource(
-            if (position == selectedPosition)
+            if (isSelected)
                 R.drawable.selected_border
             else
                 R.drawable.unselected_scorecard
         )
 
         // Text color
-        val textColor = if (position == selectedPosition) {
+//        val textColor = if (position == selectedPosition) {
+//            ContextCompat.getColor(holder.itemView.context, R.color.white)
+//        } else {
+//            ContextCompat.getColor(holder.itemView.context, R.color.dark_text_soft)
+//        }
+
+        val textColor = if (isSelected) {
             ContextCompat.getColor(holder.itemView.context, R.color.white)
         } else {
             ContextCompat.getColor(holder.itemView.context, R.color.dark_text_soft)
@@ -100,14 +127,17 @@ class ScorecardAdapter(
     }
 
     fun getSelectedItem(): ScorecardEntity? {
-        return if (selectedPosition != RecyclerView.NO_POSITION) {
-            items[selectedPosition]
+//        return if (selectedPosition != RecyclerView.NO_POSITION) {
+//            items[selectedPosition]
+//        } else null
+        return if (selectedId != null) { //Note: could cause errors if selectedId not set to null after deletion
+            items.find { it.id == selectedId }
         } else null
     }
 
     fun clearSelection() {
-        selectedPosition = RecyclerView.NO_POSITION
-
+        //selectedPosition = RecyclerView.NO_POSITION
+        selectedId = null
     }
 
 }
